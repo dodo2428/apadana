@@ -1,0 +1,138 @@
+Create a folder and a module file
+start the module by creating a folder in your Drupal installation at the path: sites/all/modules/yourfolder/
+
+Create yourfilename.module :
+Create a PHP file and save it as yourfilename.module in the directory sites/all/modules/yourfolder/
+Module files begin with the opening PHP tag followed immediately by a CVS ID tag 
+<?php
+// $Id: customsite.module
+
+/**
+* @file
+* Custom functions for this site.
+*/
+
+Make yourfilename.info  : 
+All modules must have a modulename.info file, which contains meta information about the module.
+Make a file called customsite.info and paste in the following:
+; $Id$
+name = Custom Site functions
+description = Custom functions for this site.
+core = 6.x
+
+Make yourfilename.install
+Unlike the .info and .module file, the .install file is not required for Drupal modules.
+Make a file called customsite.install and paste in the following code
+(note that there should not be a closing PHP tag):
+
+<?php
+// $Id: customsite.install
+
+/**
+* Implementation of hook_install()
+*/
+function customsite_install() {
+  // Set the module weight so it can override other modules.
+  db_query("UPDATE {system} SET weight = 99 WHERE name = 'customsite'");
+}
+
+/**
+* Implementation of hook_uninstall()
+*/
+function customsite_uninstall() {
+  // Remove the module from the system table
+  db_query("DELETE FROM {system} WHERE name = 'customsite'");
+}
+
+
+Info File Details
+name (Required)
+The displayed name of your module. It should follow the Drupal 6 capitalization standard: 
+only the first letter of the first word is capitalized ("Example module", not "example module" or "Example Module").
+name = On this date
+description (Required)
+A short, preferably one line description that will tell the administrator what this module does on the module administration page.
+Remember, overly long descriptions can make this page difficult to work with, so please try to be concise. This field is limited
+ to 255 characters.
+description = A block module that lists links to content such as blog entries or forum discussions that were created one week ago.
+
+Note that special characters in this description must be substituted with the HTML entity values. For example, use description = 
+This is my &quot;crazy@email.com&quot; email address instead of description = This is my "crazy@email.com" email address
+If the description has single quotes or apostrophes in it then you can simply put the entire string inside double quotes.
+For example, description = "Please don't use this unless you know what you are doing."
+core (Required)
+As of version 6.x, Drupal core will refuse to enable or run modules that aren't explicitly written for the right version of core.
+The .info file must specify which Drupal core compatiblity any module or theme has been ported to. This is accomplished by means 
+of the new core attribute in the .info files.
+core = 6.x
+
+
+Note: the drupal.org packaging script automatically sets this value based on the Drupal core compatibility setting on each release node,
+so users downloading packaged releases from drupal.org will always get the right thing. However, for sites that deploy Drupal directly
+from CVS, it helps if this value is added to the .info files for the module. This is also a good way to indicate to users of each module
+what version of core the HEAD of CVS is compatibile with at any given time.
+
+dependencies (Optional)
+There are a couple of extra options that may appear in the .info file, one of which are module dependencies. If a module requires 
+another module to be enabled, list each module (filename) required in the following syntax:
+dependencies[] = taxonomy
+dependencies[] = comment
+For the example module, these don't apply and we will simply omit them. If dependencies are assigned for a module,
+Drupal will not allow it to be activated until the required dependencies are met.
+
+package (Optional)
+If a module has a package string, on the admin/build/modules page it will be listed with other modules with the same category.
+If a package string is not assigned, it will simply be listed in the 'Other'. Not assigning a package for your module is perfectly ok;
+in general packages are best used for modules that are distributed together or are meant to be used together.
+If in doubt, leave this field blank.
+package = "Your arbitrary grouping string"
+
+
+
+
+Help Hook
+We can also provide help and additional information about our module by implementing Drupal's hook_help().
+Because of the use of the .info file described above, this hook is now optional. However, it is a good idea to implement it.
+To implement any hook in Drupal, replace "hook" in the hook name with your module's short name, 
+and create a function in the .module file with that name. So, to implement hook_help() in our example module,
+we create a function called onthisdate_help() in the onthisdate.module file:
+
+<?php
+function onthisdate_help($path, $arg) {
+
+}
+?>
+The $path parameter provides context for the help: where in Drupal or the module the user is when they are accessing help.
+The recommended way to process this variable is with a switch statement. This code pattern is common in Drupal modules.
+Here is a sample implementation of this function:
+
+<?php
+/**
+* Display help and module information
+* @param path which path of the site we're displaying help
+* @param arg array that holds the current path as would be returned from arg() function
+* @return help text for the path
+*/
+function onthisdate_help($path, $arg) {
+  $output = '';  //declare your output variable
+  switch ($path) {
+    case "admin/help#onthisdate":
+      $output = '<p>'.  t("Displays links to nodes created on this date") .'</p>';
+      break;
+  }
+  return $output;
+} // function onthisdate_help
+?>
+
+(note the closing ?> should not appear in your code)
+The admin/help#modulename case is used by Drupal core to link from the main help page
+(/admin/help or ?q=admin/help). You will eventually want to add more text to provide a better help message to the user.
+
+
+
+
+
+
+
+
+

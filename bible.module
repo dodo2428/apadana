@@ -1,0 +1,2419 @@
+<?php
+// $Id: bible.module,v 1.1.1.29 2010/01/11 12:40:48 mikeleebirdy Exp $
+
+//
+define('BIBLE_GOLDEN_VERSE_DEFAULT_URL', 'http://drupalbible.mikelee.idv.tw/?q=dgv');
+define('BIBLE_GOLDEN_VERSE_DEFAULT_TYPE', '0');
+define('BIBLE_BLS_POPUP_STYLE', 'border-style:ridge;border-color:#00AAFF;border-width:1px;background-color:#EEEEEE;width:300px;height:200px;');
+define('BIBLE_DATA_DEFAULT_URL', 'http://drupalbible.mikelee.idv.tw/?q=bibledata');
+define('BIBLE_WEBIMPORT_URL', 'http://drupalbible.mikelee.idv.tw/?q=bibledata/wi');
+
+function bible_init() {
+  drupal_add_js(drupal_get_path('module', 'bible') . '/bible.js');
+  drupal_add_css(drupal_get_path('module', 'bible') . '/bible.css');
+  drupal_add_js(drupal_get_path('module', 'bible') . '/bible_bls.js');
+  drupal_add_css(drupal_get_path('module', 'bible') . '/bible_bls.css');
+  global $book_list;
+	$book_list = 'GEN|EXO|LEV|NUM|DEU|';
+	$book_list .= 'JOS|JUG|RUT|1SM|2SM|1KG|2KG|1CH|2CH|EZR|NEH|TOB|JDT|EST|1MC|2MC|';
+	$book_list .= 'JOB|PS|PRO|ECC|SON|WIS|SIR|';
+	$book_list .= 'ISA|JER|LAM|BAR|EZE|DAN|';
+	$book_list .= 'HOS|JOE|AMO|OBA|JON|MIC|NAH|HAB|ZEP|HAG|ZEC|MAL|';
+	$book_list .= 'MAT|MAK|LUK|JHN|';
+	$book_list .= 'ACT|';
+	$book_list .= 'ROM|1CO|2CO|GAL|EPH|PHL|COL|1TS|2TS|1TM|2TM|TIT|PHM|HEB|';
+	$book_list .= 'JAM|';
+	$book_list .= '1PE|2PE|';
+	$book_list .= '1JN|2JN|3JN|';
+	$book_list .= 'JUD|';
+	$book_list .= 'REV';
+  global $book_namelist;	
+  $book_namelist = 'Gen|Genesis;';
+  $book_namelist .= 'Exo|Exodus|Exode;';
+  $book_namelist .= 'Lev|Leviticus;';
+  $book_namelist .= 'Num|Numbers|Nom|Nombres;';
+  $book_namelist .= 'Deu|Deuteronomy;';
+  $book_namelist .= 'Jos|Josh|Joshua';
+  $book_namelist .= 'Jud|Judges|Jug|Juges;';
+  $book_namelist .= 'Rut|Ruth;';
+  $book_namelist .= '1 Sam|1 Samuel;';
+  $book_namelist .= '2 Sam|2 Samuel;';
+  $book_namelist .= '1 Ki|1 Kings|1 Ro|1 Roi|1 Rois;';
+  $book_namelist .= '2 Ki|2 Kings|2 Ro|2 Roi|2 Rois;';
+  $book_namelist .= '1 Chr|1 Chro|1 Chron|1 Chronicles|1 Chroniques;';
+  $book_namelist .= '2 Chr|2 Chro|2 Chron|2 Chronicles|2 Chroniques;';
+  $book_namelist .= 'Ezra|Esd|Esdras;';
+  $book_namelist .= 'Neh|Nehemiah;';
+  $book_namelist .= 'Tob|Tobit|Tobie;';
+  $book_namelist .= 'Jdt|Jud|Judith;';
+  $book_namelist .= 'Est|Esther;';
+  $book_namelist .= '1 Mc|1 Maccabees|1 Mac;';
+  $book_namelist .= '2 Mc|2 Maccabees|2 Mac;';
+  $book_namelist .= 'Job;';
+  $book_namelist .= 'Ps|Psa|Psm|Psalm|Psalms|Psaume|Psaumes;';
+  $book_namelist .= 'Pro|Prov|Proverbs|Proverbes;';
+  $book_namelist .= 'Ecc|Ecclesiastes;';
+  $book_namelist .= 'Song|Song of Solomon|Can|Cantique|Cantique des cantiques|Cantique de Salomon;';
+  $book_namelist .= 'Wis|Wisdom|Sagesse;';
+  $book_namelist .= 'Sir|Sirach|Ecq|Siracide;';
+  $book_namelist .= 'Isa|Isaiah|Isaie;';
+  $book_namelist .= 'Jer|Jeremiah;';
+  $book_namelist .= 'Lam|Lamentations;';
+  $book_namelist .= 'Bar|Baruch;';
+  $book_namelist .= 'Eze|Ezek|Ezekiel;';
+  $book_namelist .= 'Dan|Daniel;';
+  $book_namelist .= 'Hos|Hosea;';
+  $book_namelist .= 'Joel;';
+  $book_namelist .= 'Amo|Amos;';
+  $book_namelist .= 'Obad|Obadiah|Abd|Abdi|Abdias;';
+  $book_namelist .= 'Jona|Jonah|Jonas;';
+  $book_namelist .= 'Mic|Micah;';
+  $book_namelist .= 'Nah|Nahum;';
+  $book_namelist .= 'Hab|Habakkuk|Habaccuc|;';
+  $book_namelist .= 'Zep|Zephaniah|Sop|Sophonie;';
+  $book_namelist .= 'Hag|Haggai|Agg;';
+  $book_namelist .= 'Zec|Zech|Zechariah|Zac|Zacharie;';
+  $book_namelist .= 'Mal|Malachi|Malachie;';
+  $book_namelist .= 'Mat|Matt|Matthew|Matthieu;';
+  $book_namelist .= 'Mar|Mark|Marc;';
+  $book_namelist .= 'Luke|Luc;';
+  $book_namelist .= 'John|Jn|Jean;';
+  $book_namelist .= 'Act|Acts|Actes;';
+  $book_namelist .= 'Rom|Romans|Romains;';
+  $book_namelist .= '1 Cor|1 Corinthians|1 Corinthiens;';
+  $book_namelist .= '2 Cor|2 Corinthians|2 Corinthiens;';
+  $book_namelist .= 'Gal|Galatians|Galates;';
+  $book_namelist .= 'Eph|Ephesians;';
+  $book_namelist .= 'Phi|Phil|Phili|Phillippians|Philippiens;';
+  $book_namelist .= 'Col|Colossians|;';
+  $book_namelist .= '1 Thes|1 Thessalonians|1 Thessaloniciens;';
+  $book_namelist .= '2 Thes|2 Thessalonians|2 Thessaloniciens;';
+  $book_namelist .= '1 Tim|1 Timothy;';
+  $book_namelist .= '2 Tim|2 Timothy;';
+  $book_namelist .= 'Tit|Titus|Tite;';
+  $book_namelist .= 'Phm|Philemon;';
+  $book_namelist .= 'Heb|Hebrews;';
+  $book_namelist .= 'Jam|James|Jac|Jacques;';
+  $book_namelist .= '1 Pet|1 Peter|1 Pi|1 Pie|1 Pierre;';
+  $book_namelist .= '2 Pet|2 Peter|2 Pi|2 Pie|2 Pierre;';
+  $book_namelist .= '1 John|1 Jn|1 Jean;';
+  $book_namelist .= '2 John|2 Jn|2 Jean;';
+  $book_namelist .= '3 John|3 Jn|3 Jean;';
+  $book_namelist .= 'Jud|Jude;';
+  $book_namelist .= 'Rev|Revelation|Apo|Apocalypse';
+  global $bdtypelist;
+  $bdtypelist = array (	'commentary' => t('Commentary'),
+  											'music' => t('Music'),
+  											'refverse' => t('Reference Verse'),
+  											'dailyread' => t('Daily Reading'),
+  											'sermon' => t('Sermon'),
+  											'misc' => t('Other Data'),
+  									 		);
+  global $base_path, $imagedir;
+  $imagedir = $base_path. drupal_get_path('module', 'bible') . '/images/';
+  drupal_add_js(array('bibleimgurl' => $imagedir), 'setting');
+  global $bibledataxml;
+  $bibledataxml = $_SESSION['bibledataxml'];
+}
+
+/**
+ * Implementation of hook_perm().
+ * Defines the permissions this module uses.
+ */
+function bible_perm() {
+  return array('administer bible', 'access bible content');
+}
+
+/**
+ * Implementation of hook_block().
+ *   Generate HTML for the bible block.
+ */
+function bible_block($op = 'list', $delta = 0, $edit = array()) {
+  switch ($op) {
+    case 'list':
+      $blocks[0]['info'] = t('Daily Golden Verse');
+      $blocks[1]['info'] = t('Bible Search');
+      $blocks[2]['info'] = t('Daily Proverb');
+      $blocks[3]['info'] = t('Random Golden Verse');
+      return $blocks;
+    case 'configure':
+      $form = array();
+      switch ($delta) {
+        case 0:
+				  if (_bible_get_bible_count() > 1) {
+					  $biblelist = _bible_get_bible_list();
+					  $biblelist[-1] = t('[By System Default]');
+					  ksort($biblelist);
+	          $form['dgvbible_options'] = array(
+	            '#type' => 'select',
+	            '#title' => t('Bible Version Options'),
+					    '#options' => $biblelist,
+	            '#description' => t('Select bible version.'),
+	            '#default_value' =>
+	              variable_get('dgvbible_options',  -1),
+	          );
+	        }
+          break;
+        case 2:
+          $form['proverb_options'] = array(
+            '#type' => 'select',
+            '#title' => t('Display Options'),
+            '#options' => array(
+                'verse' => t('First verse only'),
+                'chapter' => t('Whole chapter'),),
+            '#description' => t('Select display options.'),
+            '#default_value' =>
+              variable_get('proverb_options',  t('verse')),
+          );
+          break;
+      }
+      return $form;
+    case 'save':
+      switch ($delta) {
+        case 0:
+          variable_set('dgvbible_options', $edit['dgvbible_options']);
+          break;
+        case 2:
+          variable_set('proverb_options', $edit['proverb_options']);
+          break;
+      }
+      return;
+    case 'view':
+    default:
+      switch ($delta) {
+        case 0:
+          $block['subject'] = t('Daily Golden Verse');
+          $gvtype = variable_get('block_bible_GV_bls_type', BIBLE_GOLDEN_VERSE_DEFAULT_TYPE);
+          $gvtime = variable_get('block_bible_GV_bls_time', time());
+          $gvelapse = time() - $gvtime;
+          if (($gvelapse > 86400 && $gvtype == 2) || ($gvelapse > 3600 && $gvtype == 1) || ($gvtype == 0)) {
+	          $default_url = variable_get('bible_golden_verse_fetch_url', BIBLE_GOLDEN_VERSE_DEFAULT_URL);
+	          $xml = drupal_http_request($default_url);
+	          if ($xml->code == 200) {
+	            $xml_parser = xml_parser_create();
+	            xml_parse_into_struct($xml_parser, $xml->data, $vals, $index);
+	            xml_parser_free($xml_parser);
+	            if ($vals[0]['value']) {
+	              $bls = $vals[0]['value'];
+	            }
+	            else {
+	              $bls = '2TM:3:16';
+	            }
+	          }
+	          else {
+	            $bls = 'PS:119:105';
+	          }
+          	variable_set('block_bible_GV_bls', $bls);
+          	variable_set('block_bible_GV_bls_time', time());
+					}
+	        else {
+	          if ($gvtype == 3) {
+							$verses = trim(variable_get('block_bible_GV_verses', ""));
+							$verses = explode("\n", $verses);
+							$bls = trim($verses[mt_rand(0, count($verses)-1)]);
+							if(!$bls) $bls = "GAL:3:11";
+	          }
+	          else {
+	          	$bls = variable_get('block_bible_GV_bls', 'PS:119:105');
+	          	if ($gvelapse == 0) {
+	          		variable_set('block_bible_GV_bls_time', time());
+	          	}
+	          }
+	        }
+	        $bid = variable_get('dgvbible_options',  -1);
+          $block['content'] = theme("bible_golden_verse", _bible_get_bls_versearray($bls, $bid));
+          break;
+        case 1:
+          $block['subject'] = t('Bible Search');
+          $block['content'] = drupal_get_form('bible_search_form_noframe');
+          break;
+        case 2:
+          $block['subject'] = t('Daily Proverb');
+          // Get bible translation
+          $bid = _bible_get_select_bid();
+          // Display options. One verse ($opt=verse) or whole chapter ($opt=chapter)
+          $opt = variable_get('proverb_options', 'verse');
+          $block['content'] = theme("bible_daily_proverb", $bid, _bible_get_daily_proverb($bid), $opt);
+          break;
+        case 3:
+          $block['subject'] = t('Golden Verse');
+          // Bible translation
+          $bid = _bible_get_select_bid();
+          $block['content'] = theme("bible_golden_verse", _bible_get_random_verse($bid));
+          break;
+      }
+      return $block;
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function bible_menu() {
+  $items['admin/settings/bible'] = array(
+    'title' => 'Bible module settings',
+    'description' => 'Bible module settings control',
+    'page callback' => 'bible_admin_list',
+    'access arguments' => array('administer bible'),
+  );
+  $items['admin/settings/bible/list'] = array(
+    'title' => 'List',
+    'page callback' => 'bible_admin_list',
+    'access arguments' => array('administer bible'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 0,
+  );
+  $items['admin/settings/bible/import'] = array(
+    'title' => 'Import',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('bible_admin_import'),
+    'access arguments' => array('administer bible'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 10,
+  );
+  $items['admin/settings/bible/webimport'] = array(
+    'title' => 'Web Import',
+    'page callback' => 'bible_admin_webimport',
+    'access arguments' => array('administer bible'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 20,
+  );
+  $items['admin/settings/bible/config'] = array(
+    'title' => 'Config',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('bible_admin_config'),
+    'access arguments' => array('administer bible'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 30,
+  );
+
+  // Manage bible subtabs
+  $items['admin/settings/bible/select'] = array(
+    'page callback' => 'bible_admin_select',
+    'access arguments' => array('administer bible'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/settings/bible/delete'] = array(
+    'description' => 'Delete selected bible.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('bible_admin_delete'),
+    'access arguments' => array('administer bible'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/settings/bible/snselect'] = array(
+    'page callback' => 'bible_admin_snselect',
+    'access arguments' => array('administer bible'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/settings/bible/sndelete'] = array(
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('bible_admin_sndelete'),
+    'access arguments' => array('administer bible'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/settings/bible/snsselect'] = array(
+    'page callback' => 'bible_admin_snsselect',
+    'access arguments' => array('administer bible'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/settings/bible/maintain'] = array(
+    'page callback' => 'bible_admin_maintain',
+    'access arguments' => array('administer bible'),
+    'type' => MENU_CALLBACK,
+  );
+
+  // Normal Functions. ==========================================================
+  $items['bible'] = array(
+    'title' => 'Bible',
+    'page callback' => 'bible_all',
+    'access arguments' => array('access bible content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['bible/multiread'] = array(
+    'title' => 'Bible Multi-Read',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('bible_multiread'),
+    'access arguments' => array('access bible content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['bible/sn'] = array(
+    'title' => 'Bible Strong Number',
+    'page callback' => 'bible_sn',
+    'access arguments' => array('access bible content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['bible/snsearch'] = array(
+    'title' => 'Bible Strong Number Search',
+    'page callback' => 'bible_sn_search',
+    'access arguments' => array('access bible content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['bible/snajax'] = array (
+    'page callback' => 'bible_snajax',
+    'access arguments' => array('access bible content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['bible/ajax/vcontent'] = array (
+    'page callback' => 'bible_ajax_vcontent',
+    'access arguments' => array('access bible content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['bible/search'] = array(
+    'title' => 'Bible Search',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('bible_search_form'),
+    'access arguments' => array('access bible content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['bible/search/kw'] = array(
+    'title' => 'Bible Search',
+    'page callback' => 'bible_search_keyword',
+    'access arguments' => array('access bible content'),
+    'type' => MENU_CALLBACK,
+  );
+  // Mark the verse set.
+  $items['bible/vset'] = array(
+    'title' => 'Bible Verse Set',
+    'page callback' => 'bible_verseset',
+    'access arguments' => array('access bible content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['bible/vset/list'] = array(
+    'title' => 'My Bible Verse Set',
+    'page callback' => 'bible_verseset_list',
+    'access arguments' => array('access bible content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['bible/vset/ajax'] = array (
+    'page callback' => 'bible_verseset_ajax',
+    'access arguments' => array('access bible content'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_theme()
+ */
+function bible_theme() {
+  return array(
+    'bible_multiread' => array(
+      'arguments' => array('form' => array()),
+    ),
+    'bible_breadcrumb' => array(
+      'arguments' => array('bibles' => array(), 'book' => null, 'chapter' => null),
+    ),
+    'bible_chapter' => array(
+      'arguments' => array('bibles' => array(), 'book' => null, 'chapter' => null, 'chapter_data' => null, 'versemask' => null),
+    ),
+    'bible_chapter_data' => array(
+      'arguments' => array('book' => null, 'chapter' => null),
+    ),
+    'bible_select_book' => array(
+      'arguments' => array('bibles' => array(), 'bible_data' => null),
+    ),
+    'bible_select_chapter' => array(
+      'arguments' => array('bibles' => array(), 'book' => null, 'book_data' => null),
+    ),
+    'bible_links' => array(
+      'arguments' => array('bibles' => array(), 'bible_count' => 1),
+    ),
+    'bible_daily_proverb' => array(
+      'arguments' => array('bid' => null, 'chapter' => null, 'opt' => 'verse'),
+    ),
+    'bible_golden_verse' => array(
+      'arguments' => array('versearray' => array()),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_user().
+ */
+function bible_user($op, &$edit, &$user, $category = NULL) {
+	switch ($op) {
+    case 'categories':
+      return array(
+        array(
+          'name' => 'bible',
+          'title' => 'Bible',
+          'weight' => 3,
+        ),
+      );
+      break;
+		case 'submit':
+		  if ($edit['defaultbible'] == -1 || $edit['defaultbible'] == '') {
+		  	$sqlcmd = sprintf("DELETE FROM {bible_userprofile} WHERE uid=%s AND item='bibleselect'", $user->uid);
+		  }
+		  else {
+				$pobj = _bible_get_userprofile2($user->uid, "bibleselect", "");
+				if ($pobj != null) {
+					$sqlcmd = sprintf("UPDATE {bible_userprofile} SET data=%s WHERE uid=%s AND item='bibleselect'", $edit['defaultbible'], $user->uid);
+				}
+				else {
+					$sqlcmd = sprintf("INSERT INTO {bible_userprofile} (uid, item, data) VALUES (%s, 'bibleselect', '%s')", $user->uid, $edit['defaultbible']);
+				}
+			}
+			db_query($sqlcmd);
+			break;
+		case 'form':
+			if ($category == 'bible') {
+			  $form['bible'] = array(
+			    '#type' => 'fieldset',
+			    '#title' => t('Bible settings'),
+			    '#weight' => 10,
+			  );
+			  $biblelist = _bible_get_bible_list();
+			  $biblelist[-1] = t('[By System Default]');
+			  ksort($biblelist);
+			  $form['bible']['defaultbible'] = array(
+			    '#type' => (count($biblelist) <= 5 ? 'radios' : 'select'),
+			    '#title' => t('Default Bible'),
+			    '#default_value' => _bible_get_select_bid(),
+			    '#options' => $biblelist,
+			    '#description' => t("Select user default bible."),
+			  );
+			  return $form;
+		  }
+			break;
+	}
+}
+
+function bible_admin_list() {
+  $page_content = '';
+  $page_content .= '<fieldset><legend>'. t('Bible List') .'</legend>';
+  $queryResult = db_query("SELECT * FROM {bible_list}");
+  while ($bb = db_fetch_object($queryResult)) {
+    $qr1 = db_fetch_object(db_query("SELECT COUNT(*) as C FROM {bible_book_name} WHERE bid = %d", $bb->bid));
+    $qr2 = db_fetch_object(db_query("SELECT COUNT(*) as C FROM {bible_context} WHERE bid = %d", $bb->bid));
+    $bid = $bb->bid;
+    $biblename = l($bb->bname, 'bible/'.$bb->bid);
+    $action = l(t('Delete'), 'admin/settings/bible/delete/'. $bb->bid);
+    if ($bb->bid != variable_get('bible_select', 0)) {
+      $action .= ' '. l(t('Select'), 'admin/settings/bible/select/'. $bb->bid);
+    }
+    else {
+      $bid = "[". $bid. "]*";
+    }
+    $rowdata = array ($bid, $bb->bsn, $biblename, $bb->lang, $qr1->C, $qr2->C, $action);  	
+    if ($bb->bid == variable_get('bible_select', 0)) {
+      $rows[] = array('data' => $rowdata, 'style' => 'background-color:#FFCCCC');
+    }
+    else {
+      $rows[] = array('data' => $rowdata);
+    }
+  }
+  $header = array(
+    array('data' => '#'),
+    array('data' => t('ShortName')),
+    array('data' => t('Bible Name')),
+    array('data' => t('Language')),
+    array('data' => t('Book Count')),
+    array('data' => t('Verse Count')),
+    array('data' => t('Action')),
+  );
+  $page_content .= theme('table', $header, $rows);
+  $page_content .= '</fieldset>';
+
+  $page_content .= '<fieldset><legend>'. t('Strong Number List') .'</legend>';
+  $queryResult = db_query("SELECT * FROM {bible_sn_list}");
+  while ($sn = db_fetch_object($queryResult)) {
+    $qr1 = db_fetch_object(db_query("SELECT COUNT(*) as C FROM {bible_strongnumber} WHERE snid = %d", $sn->snid));
+    $snid = $sn->snid;
+    $action = l(t('Delete'), 'admin/settings/bible/sndelete/'. $sn->snid);
+    if ($sn->snid != variable_get('bible_sn_select', 0)) {
+      $action .= ' '. l(t('Select'), 'admin/settings/bible/snselect/'. $sn->snid);
+    }
+    else {
+      $snid = "[".$snid."]*";
+    }
+    $rowdata = array ($snid, $sn->snname, $sn->lang, $qr1->C, $action);  	
+    if ($sn->snid == variable_get('bible_sn_select', 1)) {
+      $rows1[] = array('data' => $rowdata, 'style' => 'background-color:#FFCCCC');
+    }
+    else {
+      $rows1[] = array('data' => $rowdata);
+    }
+  }
+  $header = array(
+    array('data' => '#'),
+    array('data' => t('Strong Number Version')),
+    array('data' => t('Language')),
+    array('data' => t('SN Count')),
+    array('data' => t('Action')),
+  );
+  $page_content .= theme('table', $header, $rows1);
+  $page_content .= '</fieldset>';
+
+  $page_content .= '<fieldset><legend>'. t('Strong Number Bible Select') .'</legend>';
+  $sqlcmd = "SELECT {bible_list}.* FROM {bible_list}, {bible_context}";
+  $sqlcmd .= " WHERE book = 'GEN' AND chapter = 1 AND verse = 1 AND linemark = ''";
+  $sqlcmd .= " AND context like '%<H0430>%' AND {bible_list}.bid = {bible_context}.bid";
+  $queryResult = db_query($sqlcmd);
+  $bbsnrows = array();
+  while ($bb = db_fetch_object($queryResult)) {
+    $bid = $bb->bid;
+    $action = '';
+    if ($bb->bid != variable_get('bible_snsearch_select', 0)) {
+      $action .= ' '. l(t('Select'), 'admin/settings/bible/snsselect/'. $bb->bid);
+    }
+    else {
+      $bid = "[".$bid."]*";
+    }
+    $rowdata = array ($bid, $bb->bsn, $bb->bname, $bb->lang, $action);  	
+    if ($bb->bid == variable_get('bible_snsearch_select', 0)) {
+      $bbsnrows[] = array('data' => $rowdata, 'style' => 'background-color:#FFCCCC');
+    }
+    else {
+      $bbsnrows[] = array('data' => $rowdata);
+    }
+  }
+  $header = array(
+    array('data' => '#'),
+    array('data' => t('ShortName')),
+    array('data' => t('Bible Name')),
+    array('data' => t('Language')),
+    array('data' => t('Action')),
+  );
+  $page_content .= theme('table', $header, $bbsnrows);
+  $page_content .= '</fieldset>';
+  return $page_content;
+}
+
+function bible_admin_import() {
+  $form['import'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Bible Import'),
+  );
+  $form['import']['file'] = array(
+    '#type' => 'file',
+    '#title' => t('Bible Context file'),
+    '#size' => 50,
+    '#description' => t('A bible context (.bc) file.').
+    										l('['.t('Download Page').']', 'http://drupalbible.mikelee.idv.tw/?q=node/2').
+    										l('['.t('Web Import').']', 'admin/settings/bible/webimport'),
+  );
+  $form['import']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Import .bc'),
+    '#submit' => array('_bible_import_read'),
+  );
+
+  $form['importsn'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Strong Number Import'),
+  );
+  $form['importsn']['filesn'] = array(
+    '#type' => 'file',
+    '#title' => t('Bible Strong Number file'),
+    '#size' => 50,
+    '#description' => t('A bible strong number (.sn) file.').
+    										l('['.t('Download Page').']', 'http://drupalbible.mikelee.idv.tw/?q=node/2#SN'),
+  );
+  $form['importsn']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Import .sn'),
+    '#submit' => array('_bible_strongnumber_import_read'),
+  );
+  $form['#attributes']['enctype'] = 'multipart/form-data';
+  return $form;
+}
+
+/**
+ * Process the bible file import form submission.
+ */
+function _bible_import_read($form, &$form_state) {
+  $file = file_save_upload('file');
+  watchdog('Bible', 'File Submit received. [@filename]', array('@filename' => $file->filename));
+  $fd = fopen($file->filepath, 'rb'); // File will get closed by PHP on return.
+  if (empty($fd)) {
+    $message = t('The bible import failed, because the file @filename could not be read.', array('@filename' => $file->filename));
+    drupal_set_message($message, 'error');
+    return FALSE;
+  }
+  // If not in 'safe mode', increase the maximum execution time.
+  if (!ini_get('safe_mode')) {
+    set_time_limit(240);
+  }
+
+  $status = '';
+  $lineno = 0; // Current line
+  $bid = -1;
+  $bkid = 1;
+  while (!feof($fd)) {
+    $line = fgets($fd, 10*1024); // A line should not be this long.
+    $lineno++;
+    $line = trim(strtr($line, array("\\\n" => '')));
+    if (strlen($line) > 0) {
+      switch (substr($line, 0, 1)) {
+        case '*': // Section Declare
+          if (strncmp('*Bible', $line, 6) == 0) {
+            $status = 'B';
+          }
+          if (strncmp('*Chapter', $line, 8) == 0) {
+            $status = 'C';
+            db_query("DELETE FROM {bible_book_name} WHERE bid = '%s'", $bid);
+          }
+          if (strncmp('*Context', $line, 8) == 0) {
+            $status = 'V';
+            db_query("DELETE FROM {bible_context} WHERE bid = '%s'", $bid);
+          }
+          break;
+        case '#': // Comment.
+          break;
+        case '^':	// Variable Setting.
+          if (strncmp('^Bible', $line, 6) == 0) {
+	          $data = explode('|', $line);
+            $bid = _bible_get_bible_id2($data[1], $data[2]);
+          }
+          if (strncmp('^Context', $line, 8) == 0) {
+            $status = 'V';
+          }
+          break;
+        default: // Context Data.
+          $data = explode('|', $line);
+          switch ($status) {
+            case 'B':
+              db_query("INSERT INTO {bible_list} (bsn, bname, lang) VALUES ('%s', '%s', '%s')", $data[0], $data[1], $data[2]);
+	            $bid = _bible_get_bible_id2($data[0], $data[2]);
+              break;
+            case 'C':
+              if ($bid > -1) {
+                db_query("INSERT INTO {bible_book_name} (bid, bkid, book, fname, sname, chap) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
+                  $bid, $bkid, $data[0], $data[1], $data[2], $data[3]);
+                $bkid++;
+              }
+              break;
+            case 'V':
+              if ($bid > -1) {
+                db_query("INSERT INTO {bible_context} (bid, book, chapter, verse, linemark, context) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
+                  $bid, $data[0], $data[1], $data[2], $data[3], $data[4]);
+              }
+              break;
+          }
+          break;
+      }
+    }
+  }
+  if (variable_get('bible_select', 0) == 0) {
+    variable_set('bible_select', $bid);
+  }
+  watchdog('Bible', 'Bible File Loaded. Lines: @lineno', array('@lineno' => $lineno));
+  $form_state['redirect'] = 'admin/settings/bible/list';
+}
+
+function _bible_strongnumber_import_read($form, &$form_state) {
+  $file = file_save_upload('filesn');
+  watchdog('Bible', 'File Submit received. [@filename]', array('@filename' => $file->filename));
+  $fd = fopen($file->filepath, 'rb'); // File will get closed by PHP on return.
+  if (empty($fd)) {
+    $message = t('The strong number import failed, because the file @filename could not be read.', array('@filename' => $file->filename));
+    drupal_set_message($message, 'error');
+    return FALSE;
+  }
+  // If not in 'safe mode', increase the maximum execution time.
+  if (!ini_get('safe_mode')) {
+    set_time_limit(240);
+  }
+  $lineno = 0; // Current line.
+  $snid = 0;
+  $sn = '';
+  $content = '';
+  while (!feof($fd)) {
+    $line = fgets($fd, 10*1024); // A line should not be this long.
+    $lineno++;
+    if (strlen($line) > 0) {
+      if (substr($line, 0, 1) == '*') {
+        if (strncmp('*SN', $line, 3) == 0) {
+          $line = fgets($fd, 10*1024); // A line should not be this long.
+          $line = trim(strtr($line, array("\\\n" => '')));
+          $data = explode(',', $line);
+          db_query("INSERT INTO {bible_sn_list} (snname, lang) VALUES ('%s', '%s')", $data[0], $data[1]);
+          $snobj = db_fetch_object(db_query("SELECT snid FROM {bible_sn_list} WHERE snname = '%s' AND lang = '%s'", $data[0], $data[1]));
+          $snid = $snobj->snid;
+        }
+        else {
+          if ($sn != '') {
+            $line = trim(strtr($line, array("\\\n" => '')));
+            db_query("INSERT INTO {bible_strongnumber} (snid, sn, content) VALUES ('%s', '%s', '%s')", $snid, $sn, $content);
+          }
+          $sn = trim(substr($line, 1));
+          $content = '';
+        }
+      }
+      else {
+        $content .= $line;
+      }
+    }
+  }
+  db_query("INSERT INTO {bible_strongnumber} (snid, sn, content) VALUES ('%s', '%s', '%s')", $snid, $sn, $content);
+  if (variable_get('bible_sn_select', 0) == 0) {
+    variable_set('bible_sn_select', $snid);
+  }
+  watchdog('Bible', 'Bible Strong Number File Loaded. Lines: @lineno', array('@lineno' => $lineno));
+  $form_state['redirect'] = 'admin/settings/bible/list';
+}
+
+function bible_admin_webimport($bid = '', $startvsid = '')
+{
+	if ($bid == '') {
+	  $xml = drupal_http_request(BIBLE_WEBIMPORT_URL);
+	  if ($xml->code == 200) {
+		  $doc = new DOMDocument();
+		  $doc->loadXML($xml->data);
+	    $domXPath = new DOMXPath($doc);
+		  $header = array(
+		    array('data' => t('ShortName')),
+		    array('data' => t('Bible name')),
+		    array('data' => t('Language')),
+		    array('data' => t('Status')),
+		  );
+	    $rows = array();
+	    foreach ($domXPath->query('//webimport/bible') as $keyDOM) {
+	    	$bsn = $keyDOM->textContent;
+	    	$bid = $keyDOM->getAttribute('bid');
+	    	$lang = $keyDOM->getAttribute('lang');
+	    	$rows[] = array($bsn,
+	    									$keyDOM->getAttribute('bname'),
+	    									$lang,
+	    									_bible_get_bible_id2($bsn, $lang) > 0 ? t('Already imported.') : l(t('Click to import'), 'admin/settings/bible/webimport/'.$bid),
+	    	);
+	    }
+		  $page_content .= theme('table', $header, $rows);
+		  $page_content .= t('Need some other bible? Please suggest in ').
+		  								 	l('['. t('Bible Forum'). ']', 'http://drupalbible.mikelee.idv.tw/?q=forum/5');
+		  return $page_content;
+		}
+		return t('Network error. Code:@code, error:@error', array('@code' => $xml->code, '@error' => $xml->error));
+	}
+
+	if ($startvsid == '') {
+	  $xml = drupal_http_request(BIBLE_WEBIMPORT_URL.'/'.$bid);
+	  if ($xml->code == 200) {
+		  $doc = new DOMDocument();
+		  $doc->loadXML($xml->data);
+	    $domXPath = new DOMXPath($doc);
+	    $bbnode = $domXPath->query('//webimport/bible')->item(0);
+	    $bsn = $bbnode->textContent;
+	    $lang = $bbnode->getAttribute('lang');
+	    $bid2 = _bible_get_bible_id2($bsn, $lang);
+			if ($bid2 > 0) {
+				db_query("DELETE FROM {bible_context} WHERE bid = '%s'", $bid2);
+				db_query("DELETE FROM {bible_book_name} WHERE bid = '%s'", $bid2);
+			}
+	    $start = $bbnode->getAttribute('start');
+		  drupal_add_js('misc/progress.js', 'core', 'header', FALSE, TRUE);
+		  drupal_add_js(drupal_get_path('module', 'bible') . '/bible_webimport.js');
+		  drupal_add_js(array('bibleurl' => url('admin/settings/bible/webimport')), 'setting');
+	    drupal_add_js(array('biblepara' => '/'.$bid.'/'.$start), 'setting');
+	    drupal_add_js(array('bibleimsg' => t('Starting web import')), 'setting');
+	    drupal_add_js(array('bibleemsg' => t('Error encountered.')), 'setting');
+	    $_SESSION['webimport_start'] = $start;
+	    $_SESSION['webimport_next'] = $start;
+	    $_SESSION['webimport_total'] = $bbnode->getAttribute('count');
+
+      db_query("INSERT INTO {bible_list} (bsn, bname, lang) VALUES ('%s', '%s', '%s')",
+      				$bsn, $bbnode->getAttribute('bname'), $lang);
+
+      $bid = _bible_get_bible_id2($bsn, $lang);
+	    foreach ($domXPath->query('//webimport/book') as $keyDOM) {
+	    	$data = explode('|', $keyDOM->textContent);
+	    	$bkid = $keyDOM->getAttribute('bkid');
+        db_query("INSERT INTO {bible_book_name} (bid, bkid, book, fname, sname, chap) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
+          $bid, $bkid, $data[0], $data[1], $data[2], $data[3]);
+      }
+
+	    $_SESSION['webimport_bid'] = $bid;
+
+		  $page_content = '<div id="progress"></div>';
+		  $page_content .= '<p id="wait">'. t('Please wait while bible content is being imported.'). '</p>';
+		  return $page_content;
+	  }
+		return t('Network error. Code:@code, error:@error', array('@code' => $xml->code, '@error' => $xml->error));
+	}
+
+  $nextvsid = $_SESSION['webimport_next'];
+  $xml = drupal_http_request(BIBLE_WEBIMPORT_URL.'/'.$bid.'/'.$nextvsid);
+  if ($xml->code == 200) {
+	  $doc = new DOMDocument();
+	  $doc->loadXML($xml->data);
+    $domXPath = new DOMXPath($doc);
+
+    $nextvsid = $domXPath->query('//webimport')->item(0)->getAttribute('endvsid')+1;
+    $_SESSION['webimport_next'] = $nextvsid;
+
+    $bid = $_SESSION['webimport_bid'];
+    foreach ($domXPath->query('//webimport/verse') as $keyDOM) {
+    	$data = explode('|', $keyDOM->textContent);
+      db_query("INSERT INTO {bible_context} (bid, book, chapter, verse, linemark, context) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
+        $bid, $data[0], $data[1], $data[2], $data[3], $data[4]);
+    }
+
+		// Update progressbar
+	  // HTTP Post required
+	  if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+	    drupal_set_message('HTTP Post is required.', 'error');
+	    drupal_set_title('Error');
+	    return '';
+	  }
+	  $total = $_SESSION['webimport_total'];
+	  $start = $_SESSION['webimport_start'];
+		$percentage = floor(($nextvsid - $start) / $total * 100);
+		$message = ($nextvsid - $start) .'/'. $total;
+	  print drupal_to_js(array('status' => TRUE, 'percentage' => $percentage, 'message' => $message));
+  	return;
+	}
+	return t('Network error. Code:@code, error:@error', array('@code' => $xml->code, '@error' => $xml->error));
+}
+
+function bible_admin_config()
+{
+	// common config section
+  $form['config'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Bible Parameter Configuration'),
+		'#collapsible' => TRUE,
+		'#collapsed' => TRUE,
+  );
+  $form['config']['multireadbiblename'] = array(
+		'#type' 					=> 'checkbox',
+		'#title' 					=> t('Show Bible Name when Multi-Read.'),
+		'#default_value' => variable_get('bible_config_multireadbiblename', '0'),
+ 	  '#description' => t('Show Bible Name before verse when user read chapter in multi-read function.'),
+  );
+  $form['config']['showchapternumber'] = array(
+		'#type' 					=> 'checkbox',
+		'#title' 					=> t('Show Chapter Number.'),
+		'#default_value' => variable_get('bible_config_showchapternumber', '0'),
+ 	  '#description' => t('Show Chapter number in the verse context. Ex [1:1].'),
+  );
+  $bolist[0] = t("Original Order");
+  $bolist[1] = t("Order by Bible Name");
+  $form['config']['biblelistorder'] = array(
+    '#type' => 'select',
+    '#title' => t('Bible List Order'),
+    '#default_value' => variable_get('block_config_bibielistorder', 0),
+    '#size' => 1,
+    '#options' => $bolist,
+  );
+  $form['config']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+    '#submit' => array('bible_admin_config_submit'),
+  );
+
+	// golden verse section
+  $form['goldenverse'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Golden Verse Configuration'),
+		'#collapsible' => TRUE,
+		'#collapsed' => TRUE,
+  );
+  $gvlist[0] = t('Update every time.');
+  $gvlist[1] = t('Update hourly.');
+  $gvlist[2] = t('Update daily.');
+  $gvlist[3] = t('Get from verse list below');
+  $form['goldenverse']['gv'] = array(
+    '#type' => 'select',
+    '#title' => t('Golden Verse Update Type'),
+    '#default_value' => variable_get('block_bible_GV_bls_type', BIBLE_GOLDEN_VERSE_DEFAULT_TYPE),
+    '#size' => 4,
+    '#options' => $gvlist,
+	);
+	$form['goldenverse']['gv_verses'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Golden Verse List'),
+		'#default_value' => variable_get('block_bible_GV_verses', ""),
+		'#rows' => 20,
+  );
+  $form['goldenverse']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit Golden Verse'),
+    '#submit' => array('bible_admin_config_goldenverse'),
+  );
+
+  // bibledata section
+  $form['bibledata'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Bible Data Configuration'),
+		'#collapsible' => TRUE,
+		'#collapsed' => TRUE,
+  );
+  $form['bibledata']['activebibledata'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Active bibledata'),
+    '#default_value' => variable_get('bibledata_active', 1),
+  );
+  $bdtypeselect = variable_get('bibledata_bdtypeselect', 'CMRDSX');
+  $bdselect = array();
+	foreach (str_split($bdtypeselect) as $char) {
+		if ($char == "C") $bdselect[] = "commentary";
+		if ($char == "M") $bdselect[] = "music";
+		if ($char == "R") $bdselect[] = "refverse";
+		if ($char == "D") $bdselect[] = "dailyread";
+		if ($char == "S") $bdselect[] = "sermon";
+		if ($char == "X") $bdselect[] = "misc";
+	}
+	global $bdtypelist;
+  $form['bibledata']['bdtype'] = array(
+    '#type' => 'select',
+    '#title' => t('Bible Data type selection'),
+    '#default_value' => $bdselect,
+    '#size' => 6,
+    '#options' => $bdtypelist,
+    '#multiple'	=> true,
+  );
+	$form['bibledata']['langcode'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Langages'),
+		'#default_value' => variable_get('bibledata_langcode', '*'),
+		'#description' => t('The language to get bibledata. Please use | to sepreate langcodes. Ex: en|zh-hant. * for all languages.'),
+  );
+  $form['bibledata']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit BibleData'),
+    '#submit' => array('bible_admin_config_bibledata'),
+  );
+
+  // bls popup section
+  $form['blspopup'] = array(
+    '#type' => 'fieldset',
+		'#collapsible' => TRUE,
+		'#collapsed' => TRUE,
+    '#title' => t('BLS Filter Popup Layer Style'),
+  );
+  $blspopupstyle = variable_get('bible_bls_popup_style', BIBLE_BLS_POPUP_STYLE);
+  $css = explode(';', $blspopupstyle);
+  foreach ($css as $style) {
+  	if (strlen($style) == 0) {
+  		continue;
+  	}
+  	$data = explode(':', $style);
+  	switch ($data[0]) {
+  		case 'width':
+  		case 'height':
+  		case 'border-style':
+  		case 'border-width':
+  		case 'border-color':
+  		case 'background-color':
+		  	$form['blspopup']['css'.$data[0]] = array(
+					'#type' => 'textfield',
+					'#title' => $data[0],
+					'#default_value' => $data[1],
+		    );
+		    break;
+		}
+  }
+  $form['blspopup']['morelink'] = array(
+		'#type' 					=> 'checkbox',
+		'#title' 					=> t('Add more link.'),
+		'#default_value' => variable_get('bible_bls_popup_morelink', '0'),
+ 	  '#description' => t('Add a more link at the end of bls popup.'),
+  );
+  $form['blspopup']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit BLS'),
+    '#submit' => array('bible_admin_config_blspopup'),
+  );
+
+  // bible language section
+  $form['biblelang'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Bible Language Configuration'),
+		'#collapsible' => TRUE,
+		'#collapsed' => TRUE,
+		'#description' => t('Choose browser language for the bible version. Your browser accept language:@language', array('@language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'])),
+  );
+  $queryResult = db_query("SELECT * FROM {bible_list}");
+  while ($bb = db_fetch_object($queryResult)) {
+		$form['biblelang']['bblang'.$bb->bid] = array(
+			'#type' => 'textfield',
+			'#title' => $bb->bname. '['. $bb->lang. ']',
+			'#default_value' => variable_get('bibledata_language_'.$bb->bid, '*'),
+		);
+	}
+  $form['biblelang']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit Language'),
+    '#submit' => array('bible_admin_config_biblelang'),
+  );
+
+  return $form;
+}
+
+/**
+ * Process the bible config form submission.
+ */
+function bible_admin_config_submit($form, &$form_state) {
+	variable_set('bible_config_multireadbiblename', $form['config']['#post']['multireadbiblename']);
+	variable_set('bible_config_showchapternumber', $form['config']['#post']['showchapternumber']);	
+	variable_set('block_config_bibielistorder', $form['config']['#post']['biblelistorder']);	
+}
+
+function bible_admin_config_goldenverse($form, &$form_state) {
+	$gv = $form['goldenverse']['#post']['gv'];
+	variable_set('block_bible_GV_bls_type', $gv);
+	variable_set('block_bible_GV_verses', $form['goldenverse']['#post']['gv_verses']);
+	drupal_set_message(t('Golden Verse update type is set.'));
+  $form_state['redirect'] = 'admin/settings/bible/config';
+}
+
+function bible_admin_config_bibledata($form, &$form_state) {
+	$bibledata = $form['bibledata']['#post'];
+	variable_set('bibledata_active', $bibledata['activebibledata'] == '1');
+	$bdtype = '';
+	if (isset($bibledata['bdtype'])) {
+		foreach ($bibledata['bdtype'] as $bd) {
+			if ($bd == "commentary") $bdtype .= 'C';
+			if ($bd == "music") $bdtype .= 'M';
+			if ($bd == "refverse") $bdtype .= 'R';
+			if ($bd == "dailyread") $bdtype .= 'D';
+			if ($bd == "sermon") $bdtype .= 'S';
+			if ($bd == "misc") $bdtype .= 'X';
+	  }
+	}
+	variable_set('bibledata_bdtypeselect', $bdtype);
+	variable_set('bibledata_langcode', $bibledata['langcode']);
+  $form_state['redirect'] = 'admin/settings/bible/config';
+}
+
+function bible_admin_config_blspopup($form, &$form_state) {
+	$blspopup = $form['blspopup']['#post'];
+	$styleline = '';
+	foreach (element_children($blspopup) as $key => $element) {
+		if (substr($element, 0, 3) == 'css') {
+			$styleline .= substr($element,3). ':'. $blspopup[$element]. ';';
+		}
+	}
+  $styleline .= "overflow-x:hidden;overflow-y:auto;";
+	variable_set('bible_bls_popup_style', $styleline);
+	variable_set('bible_bls_popup_morelink', $blspopup['morelink']);
+  $form_state['redirect'] = 'admin/settings/bible/config';
+}
+
+function bible_admin_config_biblelang($form, &$form_state) {
+	$biblelang = $form['biblelang']['#post'];
+	foreach (element_children($biblelang) as $key => $element) {
+		if (substr($element, 0, 6) == 'bblang') {
+			$bid = substr($element,6);
+			variable_set('bibledata_language_'.$bid, $biblelang[$element]);
+		}
+	}
+  $form_state['redirect'] = 'admin/settings/bible/config';
+}
+
+function bible_admin_select() {
+  $arg = check_plain(arg(4));
+  if (!empty($arg)) {
+    variable_set('bible_select', $arg);
+    drupal_goto('admin/settings/bible/list');
+  }
+}
+
+function bible_admin_snselect() {
+  $arg = check_plain(arg(4));
+  if (!empty($arg)) {
+    variable_set('bible_sn_select', $arg);
+    drupal_goto('admin/settings/bible/list');
+  }
+}
+
+function bible_admin_snsselect() {
+  $arg = check_plain(arg(4));
+  if (!empty($arg)) {
+    variable_set('bible_snsearch_select', $arg);
+    drupal_goto('admin/settings/bible/list');
+  }
+}
+
+function bible_admin_delete() {
+  $arg = check_plain(arg(4));
+  if (empty($arg)) {
+    drupal_goto('admin/settings/bible');
+  }
+  $form['bible'] = array(
+    '#type' => 'value',
+    '#value' => $arg,
+  );
+  return confirm_form($form,
+    t('Are you sure you want to delete the bible @name?', array('@name' => _bible_get_bible_name($arg))),
+    'admin/settings/bible',
+    t('Deleting a bible will remove all data associated with it. This action cannot be undone.'),
+    t('Delete'), t('Cancel'));
+}
+
+function bible_admin_delete_submit($form, &$form_state) {
+  $bid = $form['bible']['#value'];
+  db_query("DELETE FROM {bible_context} WHERE bid = '%s'", $bid);
+  db_query("DELETE FROM {bible_book_name} WHERE bid = '%s'", $bid);
+  db_query("DELETE FROM {bible_list} WHERE bid = '%s'", $bid);
+  $form_state['redirect'] = 'admin/settings/bible';
+}
+
+function bible_admin_sndelete() {
+  $arg = check_plain(arg(4));
+  if (empty($arg)) {
+    drupal_goto('admin/settings/bible');
+  }
+  $form['sn'] = array(
+    '#type' => 'value',
+    '#value' => $arg,
+  );
+  return confirm_form($form,
+    t('Are you sure you want to delete the Strong Number @name?', array('@name' => _bible_get_sn_name($arg))),
+    'admin/settings/bible',
+    t('This action cannot be undone.'),
+    t('Delete'), t('Cancel'));
+}
+
+function bible_admin_sndelete_submit($form, &$form_state) {
+  $snid = $form['sn']['#value'];
+  db_query("DELETE FROM {bible_sn_list} WHERE snid = '%s'", $snid);
+  db_query("DELETE FROM {bible_strongnumber} WHERE snid = '%s'", $snid);
+  $form_state['redirect'] = 'admin/settings/bible';
+}
+
+function bible_admin_maintain() {
+	$deletecount = 0;
+	$sqlcmd = "SELECT * FROM {bible_context} GROUP BY bid,book,chapter,verse,linemark HAVING COUNT(*)>1";
+	$queryResult = db_query($sqlcmd);
+	while ($mm = db_fetch_object($queryResult)) {
+		//$output .= "<br/>".$mm->vsid."<==>";
+		$wherestr = sprintf("FROM {bible_context} WHERE bid=%s AND book='%s' AND chapter=%s AND verse=%s AND linemark='%s'",
+											$mm->bid, $mm->book, $mm->chapter, $mm->verse, $mm->linemark);
+		$count = db_fetch_object(db_query("SELECT COUNT(vsid) AS C ". $wherestr));
+		if ($count->C > 1) {
+			//db_query("DELETE ". $wherestr ." AND vsid<>%s", $mm->vsid);
+			$output .= $wherestr;
+			$deletecount++;
+		}
+	}
+	return $output."<br/>Total Delete Duplicate:". $deletecount;
+}
+// Read Functions
+function bible_all($bibles_ = null, $book = null, $chapter = null, $verse = null) {
+  // arg: bible/book/chap/verse
+
+  $page_content = '';
+
+  $bible_count = _bible_get_bible_count();
+
+  if ($bible_count == '0') {
+    return t('Please import Bible Context File (*.bc) to use Bible module.');
+  }
+  else {
+	  // If arg(1) is not provided, assume default translation to be active and display chapter selection screen
+	  if (empty($bibles_)) {
+	  	$default_bible = _bible_get_select_bid();
+	    $bibles_ = $default_bible;
+	    $bibles = array($default_bible);
+	
+	  // If arg(1) is provided, extract bibles array (for multi read) and default bible from it
+	  }
+	  else {
+	    $bibles = explode('_', $bibles_);
+	    for ($i = 0; $i < sizeof($bibles); $i++) {
+		    if (!is_numeric($bibles[$i])) {
+		    	$bibles[$i] = _bible_get_bible_id($bibles[$i]);
+		    }
+	    }
+	    $default_bible = $bibles[0];
+	  }
+	  $color = array ('000000', '0000FF', '008800');
+	
+	  // Output bible breadcrumb
+	  $page_content .= theme("bible_breadcrumb", $bibles_, $book, $chapter);
+	
+	  // --------------------
+	  // Display specific chapter
+	  if (!empty($chapter)) {
+	    $bid_list = 'FIELD(bid';
+	    foreach ($bibles as $bid) {
+	      $bid_list .= ', '.$bid;
+	    }
+	    $bid_list .= ')';
+	    $chapter_data = db_query("SELECT * FROM {bible_context} WHERE bid IN (%s) AND book = '%s' AND chapter = '%s' ORDER BY verse, linemark DESC,%s",
+	    	implode(",", $bibles), check_plain($book), check_plain($chapter), check_plain($bid_list));
+
+			// Mask verse
+			// ------------ highlight
+			if ($verse != null) {
+			  $singleverse = (strpos($verse, '-') === FALSE);
+			  if ($singleverse) {
+					$versemask[$verse][] = 'highlight';
+				}
+				else {
+			    $vv = explode('-', $verse);
+					for ($i=$vv[0]; $i<=$vv[1]; $i++) {
+						$versemask[$i][] = 'highlight';
+					}
+				}
+			}
+
+			// ------------ goldenverse
+			$versemask = _bible_get_goldenversemask($book, $chapter, $versemask);
+
+			// ------------ refverse
+			$versemask = _bible_get_refversemask($book, $chapter, $versemask);
+			
+		  // Theme output
+	    $page_content .= theme("bible_chapter", $bibles_, $book, $chapter, $chapter_data, $versemask);
+
+	  // --------------------
+	  // Display chapter list
+	  } elseif (!empty($book)) {
+	    $book_data = db_fetch_object(db_query("SELECT * FROM {bible_book_name} WHERE bid = '%s' AND book = '%s'", check_plain($default_bible), check_plain($book)));
+	  	
+	    // Theme output
+	  	$page_content .= theme("bible_select_chapter", $bibles_, $book, $book_data);
+	
+	  // --------------------
+	  // Display book list
+	  }
+	  else {
+	    $bible = db_fetch_object(db_query("SELECT * FROM {bible_list} WHERE bid = '%s'", check_plain($default_bible)));
+	    if ($bible == 0) {
+	      $page_content .= t('No such Bible.');
+	    }
+	    else {
+	      $book_data = db_query("SELECT * FROM {bible_book_name} WHERE bid = '%s' ORDER BY bkid", $bible->bid);
+	
+	      // Theme output
+	      $page_content .= theme("bible_select_book", $bibles_, $book_data);
+	    }
+	  }
+	  // output links
+	  $page_content .= theme("bible_links", $bibles, $bible_count);
+	
+	  if (!empty($chapter)) $page_content .= theme("bible_chapter_data", $book, $chapter);
+  }
+
+  return $page_content;
+} // end bible_all
+
+function theme_bible_breadcrumb($bibles_, $book, $chapter) {
+  $bibles = explode('_', $bibles_);
+  $default_bible = $bibles[0];
+	
+  $page_content = "<div class='bible-breadcrumb'>";
+  if (!empty($bibles_)) $page_content .= l(_bible_get_bible_name($default_bible), 'bible/'. $bibles_);
+  if (!empty($book)) $page_content .= ' &raquo; '. l(_bible_get_chapter_name($default_bible, $book), 'bible/'. $bibles_ .'/'. $book);
+  if (!empty($chapter)) $page_content .= ' &raquo; '. l(t('Chapter @chap', array('@chap' => $chapter)), 'bible/'. $bibles_ .'/'. $book .'/'. $chapter);
+  $page_content .= "</div>";
+
+  return $page_content;
+}
+
+function theme_bible_chapter($bibles_, $book = '', $chapter = '', $chapter_data, $versemask) {
+  $bibles = explode('_', $bibles_);
+	$ismulti = (sizeof($bibles) > 1);
+	if ($ismulti) {
+    for ($i = 0; $i < sizeof($bibles); $i++) {
+    	$bibles[$i] = _bible_get_bible_id_number($bibles[$i]);
+			$biblename[$bibles[$i]] = _bible_get_bible_bsn($bibles[$i]);
+    }
+	}
+	$page_content = "";
+
+	if ($book !='' && $chapter != '') {
+		// Generate 'prev chapter' and 'next chapter' links
+	  $pnchap = explode(':', _bible_get_prevnextchap($book .':'. $chapter, $bibles[0]));
+	  $pnline1 = "&#171;" . l($pnchap[2] .' '. t('Chapter @chap', array('@chap' => $pnchap[1])), 'bible/'. $bibles_ .'/'. $pnchap[0] .'/'. $pnchap[1]);
+	  $pnline2 = l($pnchap[5] .' '. t('Chapter @chap', array('@chap' => $pnchap[4])), 'bible/'. $bibles_ .'/'. $pnchap[3] .'/'. $pnchap[4]) . "&#187;";
+	}
+
+  // Output chapter content
+  $page_content .= '<dl class="bible-chapter-content">';
+  $curverse = 0;
+  $bbpos = 0;
+  global $user;
+  while ($verse = db_fetch_object($chapter_data)) {
+    if ($verse->linemark == '*') {
+      $page_content .= '<dt class="header">'. $verse->context .'&nbsp;</dt>';
+    }
+    else {
+			$showchapternumber = variable_get('bible_config_showchapternumber', 0);
+      $verse_ = ($showchapternumber ? $verse->chapter.":" : "") . $verse->verse;
+     	$page_content .= '<span';
+      if ($curverse != $verse->verse) {
+      	$mark = ($versemask[$verse->verse] != null);
+      	// Check mark highlight
+      	if ($mark && in_array('highlight', $versemask[$verse->verse])) {
+        	$page_content .= ' class="bible-chapter-highlight"';
+        }
+        $page_content .= '><dt';
+        $page_content .= '><a name="v'. $verse->verse .'"></a>';
+        if ($user->uid > 0) {
+	        $bls = $verse->book. ':'. $verse->chapter. ':'. $verse->verse;
+	        $page_content .= '<span class="chap-verse" vset="'. bible_verseset_status($bls). '">';
+	        $page_content .= '<verse para="'. $bibles_. '/'. $bls. '">'. $verse_. '</verse>';
+	        $page_content .= '<span class="vsetimg">';
+        }
+        else {
+	        $page_content .= $verse->verse;
+        }
+	      // Check mark goldenverse
+	      if ($mark) {
+				  global $imagedir;
+				  for ($i=0; $i<6; $i++) {
+						$vsetitem = ($i == 0 ? "goldenverse" : "verseset". $i);
+						$icon = ($i == 0 ? "icon_star" : "vset_". $i). ".gif";
+	      		if (in_array($vsetitem, $versemask[$verse->verse]))
+		      		$page_content .= '<image src='. $imagedir. $icon. ' />';
+		      }
+		    }
+        $page_content .= '</span></span>';
+        $page_content .= '</dt';
+        $curverse = $verse->verse;
+        $bbpos = 0;
+      }
+      $page_content .= '><dd class="bible-context-'. $bbpos. '">';
+      if ($ismulti) {
+      	$multireadbiblename = variable_get('bible_config_multireadbiblename', 0);
+      	if ($multireadbiblename) {
+	      	$page_content .= '(<b>'. $biblename[$bibles[$bbpos]]. '</b>) ';
+	      }
+      }
+      $replace = '<span class="biblesn">[<a href='. url('bible/sn/') .'\1\2>\2</a>]</span>';
+      $page_content .= preg_replace('/<([H|G])(\d{4})>/', $replace, $verse->context);
+      $refverse = $versemask[$verse->verse]['refverse'];
+      if ($refverse != "") {
+      	global $imagedir;
+			  $idname = "refverse_". $verse->verse;
+	      $page_content .= "<span class='bls' id='". $idname. "' width='100px;'><img src='". $imagedir. "refverse.gif' /></span>";
+				$page_content .= '<span class="popup" id="popup-'. $idname. '" style="position:absolute;visibility:hidden;';
+				$page_content .= 'border-style:ridge;border-color:#AA00FF;border-width:4px;background-color:#EEEEEE;';
+				$page_content .= '">';
+	      $data = explode(';', $refverse);
+	      $rvline = "";
+	      foreach ($data as $bls) {
+	      	if ($bls != "") {
+			      $rvline .= ($rvline != "" ? "<br />" : "");
+			      $bb = explode(':', $bls);
+			      $rvline .= '<span class="vref" id="'. $bls. '">';
+			      $rvline .= _bible_get_chapter_sname($bibles[0], $bb[0]). ':'. $bb[1]. ':'. $bb[2];
+			      $rvline .= '</span>';
+			    }
+			  }
+	      $page_content .= $rvline. '</span>';
+	    }
+      $page_content .= '</dd></span>';
+      $bbpos = ($bbpos + 1) % 7;
+    }
+  }
+  $page_content .= '</dl>';
+
+  if ($ismulti) {
+    $page_content .= '<h3 class="title">'. t('Bible Color Mark') .'</h3>';
+    $page_content .= '<ul class="bible-color-mark-list">';
+    for ($i = 0; $i < sizeof($bibles); $i++) {
+      $page_content .= '<li class="bible-context-'. $i. '">'. _bible_get_bible_name($bibles[$i]). '</li>';
+    }
+    $page_content .= "</ul>";
+  }
+
+  // Output prev/next chapter
+  if ($pnline1 != '' && $pnline2 != '') {
+	  $page_content .= '<div class="bible-chapter-seek">';
+	  $page_content .= '<ul class="links clear-block">';
+	  $page_content .= '<li class="first bible-prev-chapter">'. $pnline1 .'</li>';
+	  $page_content .= '<li class="last bible-next-chapter">'. $pnline2 .'</li>';
+	  $page_content .= '</ul>';
+	  $page_content .= '</div>';
+	}
+
+  return $page_content;
+}
+
+function theme_bible_chapter_data($book, $chapter) {
+	global $bibledataxml;
+	if (_bible_get_bibledata($book, $chapter) == "") {
+		return "";
+  }
+  global $imagedir;
+	$page_content = '<div class="bible-chapter-data">';
+  $page_content .= '<ul class="links inline">';
+  $doc = new DOMDocument();
+  $doc->loadXML($bibledataxml);
+	$root = $doc->documentElement;
+  $domXPath = new DOMXPath($doc);
+  global $bdtypelist;
+	foreach ($bdtypelist as $li => $name) {
+		if ($li == "refverse") continue;
+		if ($domXPath->query('//bibledata/'. $li)->length > 0) {
+			$rows = array();
+			$page_content .= '<fieldset><legend>'. $name .'</legend>';
+	    foreach ($domXPath->query('//bibledata/'. $li. '/data') as $keyDOM) {
+	      $did = $keyDOM->getAttribute('did');
+	      $datalink = "<img src='". $imagedir. $li. ".gif' />";
+	      $datalink .= "<a href='". BIBLE_DATA_DEFAULT_URL . "/fwd/". $did;
+	      $datalink .= "' target='bibledata'>". $keyDOM->textContent. "</a>";
+	      $resplink = "<a href='". BIBLE_DATA_DEFAULT_URL . "/rec/". $did;
+	      $resplink .= "' title='". t('Recommend this bible data.');
+	      $resplink .= "' target='bibledata'><img src='". $imagedir. "recommend.gif'></a>";
+	      $resplink .= "<a href='". BIBLE_DATA_DEFAULT_URL . "/opp/". $did;
+	      $resplink .= "' title='". t('Opposite this bible data.');
+	      $resplink .= "' target='bibledata'><img src='". $imagedir. "opposite.gif'></a>";
+	      $resplink .= "<a href='". BIBLE_DATA_DEFAULT_URL . "/linkbrk/". $did;
+	      $resplink .= "' title='". t('Report this data link borken.'). "'";
+	      $resplink .= "' target='bibledata'><img src='". $imagedir. "link-broken.gif'></a>";
+	      $resplink .= "<a href='". BIBLE_DATA_DEFAULT_URL . "/unfit/". $did;
+	      $resplink .= "' title='". t('Report this data content unfit.'). "'";
+	      $resplink .= "' target='bibledata'><img src='". $imagedir. "unfit.gif'></a>";
+	      $rows[] = array($datalink, array('data' => $resplink, 'align' => 'right'));
+	    }
+		  $page_content .= theme('table', null, $rows);
+			$page_content .= '</fieldset>';
+		}
+	}
+	$page_content .= '</ul></div>';
+  return $page_content;
+}
+
+function theme_bible_select_chapter($bibles_, $book, $book_data) {
+//	$bibles_ = implode("_", $bibles);
+	$page_content .= '<h3 class="title">'. t("Select Chapter").'</h3>';
+  $page_content .= '<ul class="bible-chapter-list">';
+  for ($i = 1; $i <= $book_data->chap; $i++) {
+    $page_content .= '<li>'. l($i, 'bible/'. $bibles_ .'/'. $book .'/'. $i) .'</li>';
+  }
+  $page_content .= '</ul><br />';
+  return $page_content;
+}
+
+function theme_bible_select_book($bibles_, $book_data) {
+  $lastbook = "";
+  $booklines = "";
+  while ($qr = db_fetch_object($book_data)) {
+    	if ($lastbook == 'MAL' || $lastbook == 'REV') $booklines .= '|';
+    	$booklines .= '<span class="book book-'.strtolower($qr->book).'">'. l($qr->fname, 'bible/'. $bibles_ . '/'. $qr->book).'</span>';
+      $lastbook = $qr->book;
+  }
+  $bookline = explode('|', $booklines);
+  $page_content .= '<div class="bible-book-list">';
+  if (strlen($bookline[0])>0) $rows[] = array('data' => array(t('Old Testament'), $bookline[0]), 'class' => 'old-testament');
+  if (strlen($bookline[1])>0) $rows[] = array('data' => array(t('New Testament'), $bookline[1]), 'class' => 'new-testament');
+  if (strlen($bookline[2])>0) $rows[] = array('data' => array(t('Apocrypha'), $bookline[2]), 'class' => 'apocrypha');
+  $page_content .= theme('table', $header, $rows);
+  $page_content .= '</div>';
+  return  $page_content;
+}
+
+function theme_bible_links($bibles, $bible_count = 1) {
+  $page_content = '<hr /><div class="bible-links"><ul class="links inline">';
+  $page_content .= '<li class="first bible-search">'. l(t('Search Keyword in Bible'), 'bible/search').'</li>';
+  if ($bible_count > 1) {
+  	if (sizeof($bibles) > 1)
+  		$page_content .= '<li id="bible-plain-read">'. l(t('Bible Plain-Read'), 'bible') .'</li>';
+  	else
+  		$page_content .= '<li class="last bible-multi-read">'. l(t('Bible Multi-Read'), 'bible/multiread') .'</li>';
+  		
+  	$biblelist = _bible_get_bible_list();
+	  $arg2 = check_plain(arg(2));
+	  $arg3 = check_plain(arg(3));
+  	$href = "'". url('bible'). "/'+this.value";
+  	$hrefpara = (!empty($arg2) ? "/". $arg2 : "") . (!empty($arg3) ? "/". $arg3 : "");
+  	if ($hrefpara != '') $href .= "+'". $hrefpara. "';";
+	  global $imagedir;
+  	$page_content .= '<li class="bible-selector">';
+  	$page_content .= '<img src='. $imagedir. 'change.gif alt="'. t('Change Bible'). '" title="'. t('Change Bible'). '" />';
+  	$page_content .= '<select onchange="location.href='.$href.'" class="bible-select">';
+  	foreach ($biblelist as $bid => $bb) {
+  		$page_content .= '<option value="'.$bid.'"';
+  		if ($bid == arg(1)) $page_content .= ' selected="selected"';
+  		$page_content .= '>'.$bb.'</option>';
+  	}
+  	$page_content .= '</select></li>';
+  }
+  else {
+	  $page_content .= '<li>'. l(t('Select Bible'), 'bible').'</li>';
+  }
+  $page_content .= '<li>'. l(t('My Verses'), 'bible/vset/list').'</li>';
+  $page_content .= '</ul></div>';
+  return $page_content;
+}
+
+function bible_multiread() {
+  $form['bible'] = array('#tree' => TRUE);
+  $options = array();
+  $queryResult = db_query("SELECT * FROM {bible_list}");
+  while ($bb = db_fetch_object($queryResult)) {
+    if (variable_get('bible_select', 0) == 0) {
+      variable_set('bible_select', $bb->bid);
+    }
+    $options[$bb->bid] = $bb->bsn;
+    $form['bible'][$bb->bid] = array('#value' => $bb->bname);
+    $enabled[] = $bb->bid;
+    if ($bb->bid == variable_get('bible_select', 0)) {
+      $isdefault = $bb->bid;
+    }
+  }
+  $form['enabled'] = array(
+    '#type' => 'checkboxes',
+    '#options' => $options,
+    '#attributes' => array('class' => 'mr_check'),
+    '#default_value' => $enabled,
+  );
+  $form['bible_default'] = array(
+    '#type' => 'radios',
+    '#options' => $options,
+    '#default_value' => $isdefault,
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Bible Multi-Read')
+  );
+  $form['#theme'] = 'bible_multiread';
+  return $form;
+} // end bible_multiread
+
+/**
+ * Theme the bible_multiread form.
+ */
+function theme_bible_multiread($form) {
+  foreach ($form['bible'] as $key => $element) {
+    // Do not take form control structures.
+    if (is_array($element) && element_child($key)) {
+      $rows[] = array(
+        check_plain($key),
+        drupal_render($form['bible'][$key]),
+        drupal_render($form['enabled'][$key]),
+        drupal_render($form['bible_default'][$key]),
+      );
+    }
+  }
+  $header = array(
+    array('data' => t('#')),
+    array('data' => t('Bible name')),
+    array('data' => '<input type="checkbox" class="selectall" checked />'.t('Selected')),
+    array('data' => t('Base Bible')),
+  );
+  $output = theme('table', $header, $rows);
+  $output .= drupal_render($form);
+  return $output;
+}
+
+function bible_multiread_submit($form, &$form_state) {
+  $mb = $form_state['values']['bible_default'];
+  foreach ($form_state['values']['enabled'] as $key => $element) {
+    if (($element != 0 ) && ($key != $form_state['values']['bible_default'])) {
+      $mb .= '_'. $key;
+    }
+  }
+  $form_state['redirect'] = 'bible/'. $mb;
+}
+
+// SN Functions =========================================
+function bible_sn() {
+  $arg2 = check_plain(arg(2));
+  $arg3 = check_plain(arg(3));
+  if (!empty($arg3)) {
+    $sn = db_fetch_object(db_query("SELECT * FROM {bible_strongnumber} WHERE snid = '%s' AND sn = '%s'", $arg2, $arg3));
+    if ($sn == NULL) {
+      $snobj = db_fetch_object(db_query("SELECT snid FROM {bible_sn_list} LIMIT 1"));
+      $snid = $snobj->snid;
+      if (!empty($snid) && ($snid != $arg2)) {
+        drupal_goto('bible/sn/'. $snid .'/'. $arg3);
+      }
+      else {
+        return t('Strong Number File not imported; Or Strong Number is mistype.');
+      }
+    }
+    if (variable_get('bible_sn_select', 0) == 0) {
+      variable_set('bible_sn_select', $arg2);
+    }
+    $output = str_replace("\n", '<br />', t('Strong Number'). '[<b>'. $arg3. '</b>]<br />'. $sn->content);
+    $snselect = variable_get('bible_snsearch_select', 0);
+    if ($snselect <> 0) {
+      $output .= '<hr />['. l("Search for all appearance", "bible/snsearch/". $snselect. "/". $arg3). ']';
+    }
+    return $output;
+  }
+  elseif (!empty($arg2)) {
+    drupal_goto('bible/sn/'. variable_get('bible_sn_select', 0) .'/'. $arg2);
+  }
+}
+
+function bible_snajax($sn) {
+  $snid = variable_get('bible_sn_select', 0);
+  $snlist = db_query("SELECT * FROM {bible_strongnumber} WHERE snid = '%s' AND sn = '%s'", $snid, $sn);
+  if ($snobj = db_fetch_object($snlist)) {
+    $sndata = $snobj->sn ."\r". str_replace("\n", '', $snobj->content);
+    $sndata = str_replace("\r", '|', $sndata);
+    if (strlen($sndata) > 300) {
+      $sndata = substr($sndata, 0, 300) .'...';
+    }
+    print drupal_to_js($sndata);
+  }
+  else {
+    print drupal_to_js('');
+  }
+  exit();
+}
+
+function bible_ajax_vcontent($bls) {
+	print drupal_to_js(_bible_get_verse_content($bls));
+  exit();
+}
+
+// Search Functions =========================================================
+function bible_sn_search() {
+  $arg2 = check_plain(arg(2));
+  $arg3 = check_plain(arg(3));
+  if (!empty($arg3)) {
+    $result_set = pager_query("SELECT * FROM {bible_context} WHERE bid = '%s' AND context LIKE '%%<%s>%%' ORDER BY vsid",
+      10, 0, NULL, $arg2, strtoupper($arg3));
+    while ($verse = db_fetch_object($result_set)){
+      $bls = _bible_get_chapter_sname($arg2, $verse->book). ':'. $verse->chapter;
+      $context = str_replace('<', '&lt;', $verse->context);
+      $context = str_replace('&lt;'. $arg3. '>', '<b><font color=#ff0000>&lt;'. $arg3 .'></font></b>', $context);
+      $rows[] = array(
+        l($bls .':'. $verse->verse, 'bible/'. $arg2 .'/'. $verse->book .'/'. $verse->chapter),
+        $context,
+      );
+    }
+    $countobj = db_fetch_object(db_query("SELECT count(*) AS C FROM {bible_context} WHERE bid = '%s' AND UPPER(context) LIKE '%%%s%%' AND linemark <> '*'",
+      $arg2, strtoupper($arg3)));
+    $output = t('Search in Bible [@bible] for Strong Number [@kw], total found [@count] time(s).', array(
+      '@bible' => _bible_get_bible_name($arg2),
+      '@kw' => $arg3,
+      '@count' => $countobj->C,
+    ));
+    $output .= theme('table', $header, $rows);
+    $output .= theme('pager', NULL, 10, 0);
+    return $output;
+  }
+  elseif (!empty($arg2)) {
+    drupal_goto('bible/sn/'. variable_get('bible_sn_select', 0) .'/'. $arg2);
+  }
+}
+
+function bible_search_keyword() {
+  $arg3 = check_plain(arg(3));
+  if (empty($arg3)) {
+    return t('Please input Search Keyword.');
+  }
+  $arg4 = check_plain(arg(4));
+  if (!empty($arg4)) {
+    $defaultBible = $arg4;
+  }
+  else {
+    $defaultBible = _bible_get_select_bid();
+  }
+  $rows = array();
+  $header = array(
+    array('data' => t('Verse'), 'field' => 'vsid'),
+    array('data' => t('Context'), 'field' => 'context')
+  );
+  $wherestr = "";
+  $kwlist = explode(' ', $arg3);
+  foreach ($kwlist as $kw) {
+  	$wherestr .= " AND";
+  	if (substr($kw, 0, 1) == '-') {
+  		$wherestr .= " NOT";
+  		$kw = substr($kw, 1);
+  	}
+  	$wherestr .= " UPPER(context) LIKE '%". strtoupper($kw). "%'";
+  }
+  $wherestr = "bid = '". $defaultBible. "' ". $wherestr. " AND linemark <> '*'";
+  $result_set = pager_query("SELECT * FROM {bible_context} WHERE ". $wherestr. " ORDER BY vsid",
+    15, 0, NULL);
+  while ($verse = db_fetch_object($result_set)){
+    $bls = _bible_get_chapter_sname($defaultBible, $verse->book). ':'. $verse->chapter;
+	  $searchlink = url('bible/'. $defaultBible .'/'. $verse->book .'/'. $verse->chapter .'/'. $verse->verse);
+	  $searchlink .= '#v'. $verse->verse;
+    $rows[] = array(
+      "<a href='". $searchlink. "'>". $bls .':'. $verse->verse. "</a>",
+      preg_replace('/('. implode('|', $kwlist). ')/', '<span class="searchkw">\1</span>', $verse->context),
+    );
+  }
+  $countobj = db_fetch_object(db_query("SELECT count(*) AS C FROM {bible_context} WHERE ". $wherestr));
+  $output = t('Search in Bible [@bible] for Keyword [@kw], total found [@count] time(s).', array(
+    '@bible' => _bible_get_bible_name($defaultBible),
+    '@kw' => $arg3,
+    '@count' => $countobj->C,
+  ));
+  $output .= theme('table', $header, $rows);
+  $output .= theme('pager', NULL, 15, 0);
+  // output links
+  $output .= theme("bible_links", $bibles, $bible_count);
+  return $output;
+}
+
+function bible_search_form() {
+	$form = bible_search_form_noframe($form);
+	$form['search']['#type'] = 'fieldset';
+	$form['search']['#title'] = t('Bible Search');
+  return $form;
+}
+
+function bible_search_form_noframe() {
+  $form['search']['keyword'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Keyword to search'). '<a href="" title="'. t('Keyword to search in Bible context. Multi-keywords are available. Use - as a negative(NOT) search.'). '"> <b>(?)</b></a>',
+	  '#attributes' => array('class' => 'searchtext'),
+    '#default_value' => '',
+  );
+  if (_bible_get_bible_count() > 1) {
+	  $form['search']['select'] = array(
+	    '#type' => 'select',
+	    '#title' => t('Bible name'). '<a href="" title="'. t('Select Bible you want to search.'). '"> <b>(?)</b></a>',
+	    '#default_value' => _bible_get_select_bid(),
+	    '#options' => _bible_get_bible_list(),
+	    '#attributes' => array('class' => 'biblelist'),	
+	  );
+	}
+  $form['search']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Search'),
+    '#submit' => array('bible_search_form_submit'),
+  );
+  return $form;
+}
+
+function bible_search_form_submit($form, &$form_state) {
+  $form_state['redirect'] = 'bible/search/kw/'. $form['search']['keyword']['#value'] .'/'. $form['search']['select']['#value'];
+}
+
+function bible_verseset_toggle($bls = '', $vset = 0) {
+	global $user;
+	if ($user->uid == 0) {
+		return -1;
+	}
+	$vsetitem = ($vset == 0 ? "vs_goldenverse" : "vs_verseset". $vset);
+	$pobj = _bible_get_userprofile($vsetitem, $bls);
+	if ($pobj == null) {
+		db_query("INSERT INTO {bible_userprofile} (uid, item, data) VALUES (%s, '". $vsetitem. "', '%s')", $user->uid, $bls);
+	}
+	else {
+		db_query("DELETE FROM {bible_userprofile} WHERE pid=%s", $pobj->pid);
+	}
+	return 0;
+}
+
+function bible_verseset($bibles_ = 1, $bls = '', $vset = null) {
+	global $user;
+	if ($user->uid == 0) {
+		return;
+	}
+	if (_bible_get_verse_content($bls) == t('N/A')) {
+		drupal_set_message(t('[<b>@bls</b>] is not valid.', array('@bls' => $bls)), 'error');
+		drupal_goto('bible/'.$bibles_);
+	}
+	if (bible_verseset_toggle($bls, $vset) == -1) {
+		drupal_set_message(t('Please mark verse after login.'));
+		drupal_goto('bible/'.$bibles_);
+	}
+	$data = explode(':', $bls);
+	drupal_goto('bible/'.$bibles_.'/'.$data[0].'/'.$data[1].'/'.$data[2]);
+}
+
+function bible_verseset_list($vset = -1) {
+	global $user;
+	if ($user->uid == 0) {
+		drupal_set_message(t('Please login.'));
+		drupal_goto('bible/'.$bibles_);
+	}
+
+  $rows = array();
+	$sqlcmd = sprintf("SELECT item,count(*) as C FROM {bible_userprofile} WHERE uid=%s AND item='vs_goldenverse' OR item LIKE 'vs_verseset%%' GROUP BY item", $user->uid);
+  $result_set = db_query($sqlcmd, 15, 0, NULL);
+  while ($vs = db_fetch_object($result_set)){
+  	$vno = ($vs->item == "vs_goldenverse" ? 0 : substr($vs->item, strlen($vs->item)-1, 1));
+  	$vitem = ($vs->item == "vs_goldenverse" ? t('Golden Verse') : t('Verse Set'). ' '. $vno);
+    $rows[] = array(
+      $vitem, l($vs->C, 'bible/vset/list/'. $vno),
+    );
+  }
+  $output .= theme('table', $header, $rows);
+
+  $rows = array();
+  $header = array(
+    array('data' => t('Verse')),
+    array('data' => t('Context'))
+  );
+  $defaultBible = _bible_get_select_bid();
+	$vsetitem = ($vset <= 0 ? "goldenverse" : "verseset". $vset);
+	$sqlcmd = sprintf("SELECT data FROM {bible_userprofile} WHERE uid=%s AND item='vs_". $vsetitem. "'", $user->uid);
+  $result_set = pager_query($sqlcmd, 15, 0, NULL);
+  while ($verse = db_fetch_object($result_set)){
+  	$data = explode(':', $verse->data);
+    $bls = _bible_get_chapter_sname($defaultBible, $data[0]). ':'. $data[1];
+	  $verselink = url('bible/'. $defaultBible .'/'. $data[0] .'/'. $data[1] .'/'. $data[2]);
+	  $verselink .= '#v'. $data[2];
+    $rows[] = array(
+      "<a href='". $verselink. "'>". $bls .':'. $data[2]. "</a>", _bible_get_verse_content($verse->data),
+    );
+  }
+  $output .= theme('table', $header, $rows);
+  $output .= theme('pager', NULL, 15, 0);
+  // output links
+  $output .= theme("bible_links", $bibles, $bible_count);
+  return $output;
+}
+
+function bible_verseset_status($bls) {
+	global $user;
+	if ($user->uid == 0) {
+		return "000000";
+	}
+	$pobj = _bible_get_userprofile("vs_goldenverse", $bls);
+	$status = ($pobj == null ? "0" : "1");
+	for ($i=1; $i<6; $i++) {
+		$pobj = _bible_get_userprofile("vs_verseset". $i, $bls);
+		$status .= ($pobj == null ? "0" : "1");
+	}
+	return $status;
+}
+
+function bible_verseset_ajax($bls = '', $vset = 0) {
+  bible_verseset_toggle($bls, $vset);
+  print drupal_to_js(bible_verseset_status($bls));
+  exit();
+}
+
+/**
+ * Implementation of hook_filter().
+ */
+function bible_filter($op, $delta = 0, $format = -1, $text = '') {
+  switch ($op) {
+    case 'list':
+      return array(0 => t('Bible BLS Filter'));
+    case 'description':
+      return t('Turns any BLS reference into a link.');
+    case 'process':
+      return _bible_blsanchorize($text);
+      break;
+    case 'settings':
+      $form['filter_bible'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'BLS filter',
+        '#collapsible' => TRUE,
+        '#description' => t('This filter enables content that has a BLS reference.')
+      );
+      return $form;
+    default:
+      return $text;
+  }
+}
+
+function _bible_blsanchorize($text = ''){
+  // Skip everything within a hyperlink, a <pre> block, a <code> block, or a tag.
+  $anchor_regex = '<a\s+href.*?<\/a>';
+  $pre_regex = '<pre>.*<\/pre>';
+  $code_regex = '<code>.*<\/code>';
+  $tag_regex = '<(?:[^<>\s]*)(?:\s[^<>]*){0,1}>'; // $tag_regex='<[^>]+>';
+  $split_regex = "/((?:$anchor_regex)|(?:$pre_regex)|(?:$code_regex)|(?:$tag_regex))/i";
+  $parsed_text = preg_split($split_regex, $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+  $linked_text = '';
+  while (list($key,$value) = each($parsed_text)) {
+    if (preg_match($split_regex, $value)) {
+      $linked_text .= $value; // If it is an HTML element or within a link, just leave it as is.
+    }
+    else {
+      $linked_text .= ' '. _bible_blsaddLink($value);
+    }
+  }
+  return $linked_text;
+}
+
+function _bible_blsaddLink($text = '') {
+	global $book_list, $book_namelist;
+  $book_regex = $book_list .'|'. str_replace(';', '|', $book_namelist);
+  $pattern_regex = '/('. $book_regex .')[:. ]+(\d{1,3}):(\d{1,3}(?:-\d{1,3})?)([#\^]\w+)?(\s?)/e';
+  $replacement_regex = '_bible_blsdivhtml("\1", "\2", "\3", "\4", "\5")';
+  $text = preg_replace($pattern_regex, $replacement_regex, $text);
+  return $text;
+}
+
+function _bible_blsdivhtml($book, $chap, $verse, $para, $tail) {
+	if ($para != "") {
+		$paracmd = substr($para, 0, 1);
+		$bid = _bible_get_bible_id(trim(substr($para, 1)));
+		if ($bid == "") {
+			$bid = _bible_get_select_bid();
+		}
+	}
+	
+	if ($para == "" || $paracmd == "^") {
+		$usec = explode(' ', microtime());
+		$timeid = explode('.', $usec[0]);
+	  $idname = str_replace(' ', '_', $book) .'_'. $chap .'_'. $verse . '_'. $timeid[1];
+	  if ($bid == "") $bid = _bible_get_select_bid();
+	
+		global $book_list, $book_namelist;
+		if (preg_match('/'.$book_list.'/', $book)) {
+			// For Reguler BLS, Ex: GEN:1:1
+	  	$bls = _bible_get_chapter_sname($bid, $book). ':'. $chap. ':'. $verse;
+		}
+		else {
+			// For other naming, Ex: Gen.1:2
+		  $bls = $book. ':'. $chap. ':'. $verse;
+		  $patt_array = explode(';', '/'. str_replace(';', '%/A;/', str_replace('|', '%|', $book_namelist)). '/');
+		  $book_array = explode('|', $book_list);
+			$book = preg_replace($patt_array, $book_array, $book.'%');
+		}
+	  $html = '<span class="bls" style="background-color:#EEEEFF;" id="'. $idname. '"';
+	  $html .= '>'. $bls;
+	  $html .= '</span>';
+	  $blspopupstyle = variable_get('bible_bls_popup_style', BIBLE_BLS_POPUP_STYLE);
+	  if ($blspopupstyle == '') {
+		  $blspopupstyle = BIBLE_BLS_POPUP_STYLE;
+		  variable_set('bible_bls_popup_style', $blspopupstyle);
+		}
+	
+	  $html .= '<span class="popup" id="popup-'. $idname .'" style="position:absolute;';
+	  $html .= 'visibility:hidden;z-index:999;overflow-x:hidden;overflow-y:auto;'.$blspopupstyle.'"';
+	  $pattern_regex = '/(\[\d{1,3}\])/';
+	  $replacement_regex = '<font color="green">\1</font>';
+	  $html .= '>'. preg_replace($pattern_regex, $replacement_regex, _bible_get_verse_content2($book .':'. $chap .':'. $verse, $bid));
+		if (variable_get('bible_bls_popup_morelink', '0') == 1) {
+			$morelink = _bible_morelink($bid, $book, $chap, $verse);
+			$html .= '<br /><a href="'. $morelink. '">'. t("See All..."). '</a>';
+		}
+	  $html .= '</span>';
+	}
+	else {
+		if ($paracmd == '#') {
+		  $bls = $book. ':'. $chap. ':'. $verse;
+			$html = _bible_get_verse_content2($bls, $bid);
+		}
+	}
+  return $html. $tail;
+}
+
+// Common Functions
+function _bible_get_bible_count() {
+  return db_result(db_query("SELECT COUNT(bid) FROM {bible_list}"));
+}
+
+function _bible_get_bible_list() {
+	$sqlcmd = "SELECT * FROM {bible_list}";
+	switch (variable_get('block_config_bibielistorder', 0)) {
+		case 1:
+			$sqlcmd .= " ORDER BY bname";
+	}
+  $queryResult = db_query($sqlcmd);
+  while ($bb = db_fetch_object($queryResult)) {
+    $biblelist[$bb->bid] = $bb->bname;
+  }
+  return $biblelist;
+}
+
+function _bible_get_obj($sqlcmd) {
+  return db_fetch_object(db_query($sqlcmd));
+}
+
+function _bible_get_bible_name($bid) {
+	$bid = _bible_get_bible_id_number($bid);
+	$bb = _bible_get_obj(sprintf("SELECT * FROM {bible_list} WHERE bid = '%s'", $bid));
+	return ($bb == null ? '' : $bb->bname);
+}
+
+function _bible_get_bible_bsn($bid) {
+	$bid = _bible_get_bible_id_number($bid);
+	$bb = _bible_get_obj(sprintf("SELECT * FROM {bible_list} WHERE bid = '%s'", $bid));
+	return ($bb == null ? '' : $bb->bsn);
+}
+
+function _bible_get_bible_id($bsn) {
+	$bb = _bible_get_obj(sprintf("SELECT * FROM {bible_list} WHERE bsn = '%s'", $bsn));
+	return ($bb == null ? '' : $bb->bid);
+}
+
+function _bible_get_bible_id2($bsn, $lang) {
+	$bb = _bible_get_obj(sprintf("SELECT * FROM {bible_list} WHERE bsn = '%s' AND lang = '%s'", $bsn, $lang));
+	return ($bb == null ? '' : $bb->bid);
+}
+
+function _bible_get_bible_id_number($bid) {
+	return (!is_numeric($bid) ? _bible_get_bible_id($bid) : $bid);
+}
+
+function _bible_get_chapter_name($bid, $book) {
+	$bid = _bible_get_bible_id_number($bid);
+	$book = _bible_get_obj(sprintf("SELECT * FROM {bible_book_name} WHERE bid = '%s' AND book = '%s'", $bid, $book));
+	return ($book == null ? '' : $book->fname);
+}
+
+function _bible_get_chapter_sname($bid, $book) {
+	$bid = _bible_get_bible_id_number($bid);
+	$book = _bible_get_obj(sprintf("SELECT * FROM {bible_book_name} WHERE bid = '%s' AND book = '%s'", $bid, $book));
+	return ($book == null ? '' : $book->sname);
+}
+
+function _bible_get_sn_name($snid) {
+	$sn = _bible_get_obj(sprintf("SELECT * FROM {bible_sn_list} WHERE snid = '%s'", $snid));
+	return ($sn == null ? '' : $sn->snname);
+}
+
+function _bible_get_bls_name($bls, $bid = -1) {
+	if ($bid == -1) $bid = _bible_get_select_bid();
+	$data = explode(':', $bls);
+	$bookname = _bible_get_chapter_name($bid, $data[0]);
+	switch (sizeof($data)) {
+		case 0:
+			return t('N/A');
+		case 1:
+			return $bookname;
+		case 2:
+			return t('@bookname Chapter @chap', array('@bookname' => $bookname, '@chap' => $data[1]));
+		default:
+			return t('@bookname Chapter @chap Verse @verse', array('@bookname' => $bookname, '@chap' => $data[1], '@verse' => $data[2]));
+	}
+}
+
+/**
+ * Returns a bible chapter.
+ *
+ * @param $bid
+ *   STRING integer identifying the default bible translation.
+ * @param $book
+ *   STRING identifying the book short name. Example: 'GEN'.
+ * @param $chapter
+ *   STRING integer identifying the chapter.
+ * @return
+ *   ARRAY containing chapter verses.
+ */
+function _bible_get_chapter($bid, $book, $chapter){
+  // Check variables
+  if($bid != '' && $book != '' && $chapter != ''){
+    $queryResult = db_query("SELECT b.vsid, b.bid, b.book, b.chapter, b.context FROM {bible_context} b WHERE b.bid = %d AND b.book = '%s' AND b.chapter = %d AND linemark = '' ORDER BY b.vsid", $bid, $book, $chapter);
+    while($co = db_fetch_object($queryResult)){
+      $chapter_context[] = $co->context;
+    }
+    return $chapter_context;
+  }
+  return '';
+}
+
+function _bible_get_userprofile($item, $data) {
+	global $user;
+	return _bible_get_userprofile2($user->uid, $item, $data);
+}
+
+function _bible_get_userprofile2($uid, $item, $data) {
+	global $user;
+	$sqlcmd = sprintf("SELECT * FROM {bible_userprofile} WHERE uid=%s AND item='%s'", $user->uid, $item);
+	if ($data != "") {
+		$sqlcmd .= " AND data='". $data. "'";
+	}
+	return _bible_get_obj($sqlcmd);
+}
+
+function _bible_get_user_browser_lang() {
+	$lang = split(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+	return $lang[0];
+}
+
+function _bible_get_select_bid() {
+	// Priority: UserSet, BibleLang+Browser, System Default
+	// UserSet
+	$pobj = _bible_get_userprofile("bibleselect", "");
+	if ($pobj != null) {
+		return $pobj->data;
+	}
+	$pobj = _bible_get_userprofile2(-1, "bibleselect", "");
+	if ($pobj != null) {
+		return $pobj->data;
+	}
+	// BibleLang_Browser
+	$biblelist = _bible_get_bible_list();
+	if ($biblelist != null) {
+		$userbrowserlang = _bible_get_user_browser_lang();
+		foreach ($biblelist as $bid => $bb) {
+			if (variable_get('bibledata_language_'. $bid, '*') == $userbrowserlang) {
+				return $bid;
+			}
+		}
+	}
+	else {
+		drupal_set_message("You haven't imported any bibles to your site.", 'error');
+		if (user_access('administer bible')) {
+			drupal_set_message(t('Please import bibles from '). l(t('here'), 'admin/settings/bible/webimport'). '.');
+		}
+	}
+	// System Default
+	return variable_get('bible_select', 1);
+}
+
+function _bible_get_verse_content($bls) {
+  $bid = _bible_get_select_bid();
+  return _bible_get_verse_content2($bls, $bid);
+}
+
+function _bible_get_verse_content2($bls, $bid) {
+  $data = explode(':', $bls);
+  $singleverse = (strpos($data[2], '-') === FALSE);
+  if ($singleverse) {
+    $queryResult = db_query("SELECT * FROM {bible_context} WHERE bid = '%s' AND book = '%s' AND chapter = '%s' AND linemark = '' AND verse = '%s'",
+      $bid, $data[0], $data[1], $data[2]);
+  }
+  else {
+    $vv = explode('-', $data[2]);
+    $queryResult = db_query("SELECT * FROM {bible_context} WHERE bid = '%s' AND book = '%s' AND chapter = '%s' AND linemark = '' AND verse >= '%s' AND verse <= '%s' ORDER BY verse",
+      $bid, $data[0], $data[1], $vv[0], $vv[1]);
+  }
+  $verse = '';
+  while ($qr = db_fetch_object($queryResult)) {
+    $verse .= ($singleverse ? '' : ' <span class="verse">['. $qr->verse. ']</span> '). $qr->context. "\n";
+  }
+  return $verse;
+}
+
+function _bible_get_prevnextchap($bls, $bid = -1) {
+	if ($bid == -1) {
+	  $bid = _bible_get_select_bid();
+	}
+	else {
+		$bid = _bible_get_bible_id_number($bid);
+	}
+  $data = explode(':', $bls);
+  $queryResult = db_query("SELECT * FROM {bible_book_name} WHERE bid = '%s' AND book = '%s'", $bid, $data[0]);
+  $book = db_fetch_object($queryResult);
+  if ($book == null) {
+    return '';
+  }
+  // Find Prev Chapter.
+  if ($data[1] > 1) {
+    $prevchap = $data[0] .':'. ($data[1] - 1) .':'. $book->fname;
+  }
+  else {
+    if ($book->bkid == 1) {
+      $bkid = 66;
+    }
+    else {
+      $bkid = ($book->bkid)-1;
+    }
+    $prevbk = db_fetch_object(db_query("SELECT * FROM {bible_book_name} WHERE bid = '%s' AND bkid = '%s'", $bid, $bkid));
+    $prevchap = $prevbk->book .':'. $prevbk->chap .':'. $prevbk->fname;
+  }
+  // Find Next Chapter.
+  if (($book->chap) > $data[1]) {
+    $nextchap = $data[0] .':'. ($data[1] + 1) .':'. $book->fname;
+  }
+  else {
+    if ($book->bkid == 66) {
+      $bkid = 1;
+    }
+    else {
+      $bkid = ($book->bkid) + 1;
+    }
+    $nextbk = db_fetch_object(db_query("SELECT * FROM {bible_book_name} WHERE bid = '%s' AND bkid = '%s'", $bid, $bkid));
+    $nextchap = $nextbk->book .':1:'. $nextbk->fname;
+  }
+  return $prevchap .':'. $nextchap;
+}
+
+/**
+ * Returns a Daily Proverb
+ *
+ * Returns a Daily Proverb from the database based on the current day of the month.
+ *
+ * @param $bid
+ *   A string integer identifying the default bible translation.
+ * @return
+ *   ARRAY containing chapter verses.
+ */
+function _bible_get_daily_proverb ($bid = 1){
+  // Initialize variable
+  $page_content = '';
+  // Set book to Proverbs 'PRO'
+  $book = 'PRO';
+  // Set chapter the current day of the month
+  $chapter = date("j");
+  // Call get chapter method
+  $page_content = _bible_get_chapter($bid, $book, $chapter);
+  // Return Proverb chapter
+  return $page_content;
+}
+
+/**
+ * Grabs a random verse
+ *
+ * Grabs a random verse from the database based on the default translation.
+ *
+ * @param $bid
+ *   STRING integer identifying the default bible translation.
+ * @return
+ *   ARRAY containing verse information.
+ */
+function _bible_get_random_verse ($bid = 1){
+  // Initialize variables
+  $verse_array = '';
+  $count = '';
+  $min = '';
+  $max = '';
+  $rand = '';
+  // Determine verse limits based on translation
+  $queryResults = db_query("SELECT max(b.vsid) as vmax, min(b.vsid) as vmin FROM {bible_context} b WHERE b.bid = %d ORDER BY b.vsid", $bid);
+  if ($vl = db_fetch_object($queryResults)){
+    $max = $vl->vmax;
+    $min = $vl->vmin;
+    $rand = rand($min, $max);
+    // Grab random verse from db using translation and random verse id
+    $verseResults = db_query("SELECT b.vsid, b.bid, b.book, b.chapter, b.verse, b.context FROM {bible_context} b WHERE b.vsid = %d AND b.bid = %d", $rand, $bid);
+    if ($vo = db_fetch_object($verseResults)) {
+      $verse_array = array('bid' => $vo->bid, 'book' => $vo->book, 'chapter' => $vo->chapter, 'verse' => $vo->verse, 'context' => $vo->context);
+    }
+  }
+  // Return verse array
+  return $verse_array;
+}
+
+function _bible_get_bls_versearray($bls, $bid = -1){
+	if ($bid == -1) {
+		$bid = _bible_get_select_bid();
+	}
+	$data = explode(':', $bls);
+  $verse_array = array(	'bid' => $bid,
+  											'book' => $data[0],
+  											'chapter' => $data[1],
+  											'verse' => $data[2],
+  											'context' => _bible_get_verse_content2($bls, $bid));
+  // Return verse array
+  return $verse_array;
+}
+
+function _bible_get_goldenversemask($book, $chapter, $versemask = array()) {
+	global $user;
+	if ($user->uid > 0) {
+		$sqlcmd = "SELECT * FROM {bible_userprofile} WHERE uid=%s AND item IN ('vs_goldenverse'";
+		for ($i = 1; $i < 6; $i++) {
+			$sqlcmd .= ", 'vs_verseset". $i ."'";
+		}
+		$sqlcmd .= ") AND data LIKE '%s:%s:%%'";
+		$verseset = db_query($sqlcmd, $user->uid, check_plain($book), check_plain($chapter));
+	  while ($up = db_fetch_object($verseset)) {
+			$updata = explode(':', $up->data);
+			$vsname = substr($up->item,3);
+			$versemask[$updata[2]][] = ($vsname == 'goldenverse' ? t('GoldenVerse') : t('Verse Set'));
+		}
+	}
+	return $versemask;
+}
+
+function _bible_get_refversemask($book, $chapter, $versemask = array()) {
+	global $bibledataxml;
+	if (_bible_get_bibledata($book, $chapter) == "") {
+		return $versemask;
+  }
+  $doc = new DOMDocument();
+  $doc->loadXML($bibledataxml);
+  $domXPath = new DOMXPath($doc);
+  foreach ($domXPath->query('//bibledata/refverse/data') as $keyDOM) {
+    $did = $keyDOM->getAttribute('did');
+    $bls = $keyDOM->getAttribute('bls');
+    $refurl = $keyDOM->getAttribute('refurl');
+		$data = explode(':', $bls);
+    $versemask[$data[2]]['refverse'] .= $refurl. ';';
+  }
+	return $versemask;
+}
+
+function _bible_morelink($bid, $book, $chap, $verse) {
+  $morelink = url('bible/'.$bid.'/'.$book.'/'.$chap.'/'.$verse);
+  if (strpos($verse, '-')) {
+    $vv = explode('-', $verse);
+  	$morelink .= '#v'. $vv[0];
+  }
+  else {
+  	$morelink .= '#v'. $verse;
+  }
+  return $morelink;
+}
+
+function _bible_get_bibledata($book, $chapter) {
+	global $bibledataxml;
+  if (variable_get('bibledata_active', 1) != 1) {
+  	$bibledataxml = "";
+  	return "";
+  }
+  if ($bibledataxml != "") {
+	  $doc = new DOMDocument();
+	  $doc->loadXML($bibledataxml);
+		$root = $doc->documentElement;
+		if ($root->getAttribute('bls') == $book. ":". $chapter) {
+			return $bibledataxml;
+		}
+	}
+  $default_url = BIBLE_DATA_DEFAULT_URL. '/getchap/'. $book. ':'. $chapter;
+  $default_url .= '/'. variable_get('bibledata_bdtypeselect', '');
+  if (variable_get('bibledata_langcode', '*') != '*') {
+	  $default_url .= '/'. variable_get('bibledata_langcode', '*');
+  }
+  $xml = drupal_http_request($default_url);
+  $bibledataxml = ($xml->code == 200 ? $xml->data : '');
+  $_SESSION['bibledataxml'] = $bibledataxml;
+  return $bibledataxml;
+}
+
+// Theme Functions =========================================================
+
+/**
+ * Displays a daily Proverb.
+ *
+ * Displays a daily Proverb based on the day of the month.
+ *
+ * @param $bid
+ *   STRING integer identifying the bible translation id.
+ * @param $chapter
+ *   ARRAY of strings containing each verse.
+ * @param $opt
+ *   STRING which identifies which view to display ('admin', or 'verse').
+ * @return
+ *   STRING a themed box.
+ * @ingroup themeable
+ */
+function theme_bible_daily_proverb($bid, $chapter, $opt = 'verse'){
+  $page_content .= '';
+  $chapter_id = date("j");
+  // Show the whole chapter
+  if($opt == 'chapter'){
+    $title = t("Proverbs"). " ". $chapter_id;
+    $content = theme_item_list($chapter, '', $type = 'ol');
+    $page_content .= theme_box($title, $content);
+  }
+  // Show just the first verse or a random verse
+  else{
+  	$count = _bible_get_obj("SELECT Max(Verse) AS C FROM {bible_context} WHERE book='PRO' AND chapter=".$chapter_id." AND bid=".$bid);
+  	// Try three times
+  	for ($i=0; $i<3; $i++) {
+	  	$vno = rand(1, $count->C);
+	    $title = t("Proverbs"). " ". $chapter_id. ":". $vno;
+	    $content = $chapter[$vno-1];
+	    if ($content != "") break;
+	  }
+    $page_content .= theme_box($title, $content);
+    $page_content .= '<div class="bible-more-link">'.l(t("See All..."), 'bible/'.$bid.'/PRO/'.$chapter_id)."</div>";
+  }
+  // Return themed table
+  return $page_content;
+}
+
+/**
+ * Displays a random verse.
+ *
+ * Displays a random verse based on the default translation.
+ *
+ * @param $verse_array
+ *   ARRAY containing the translation, book, chapter and verse information.
+ * @return
+ *   STRING a themed box.
+ * @ingroup themeable
+ */
+function theme_bible_golden_verse($verse_array){
+  $page_content .= '';
+  // Show just the first verse
+  $bookname = _bible_get_chapter_name($verse_array['bid'], $verse_array['book']);
+  $title = $bookname. " ". $verse_array['chapter']. ":". $verse_array['verse'];
+  $showchapternumber = variable_get('bible_config_showchapternumber', 0);
+  $replacement_regex = ' <span class="verse">['.($showchapternumber ? $verse_array['chapter']. ":" : '');
+  $replacement_regex .= '\1]</span>\2<span class="verse-break"></span>';
+  $content = preg_replace('/\[(\d{1,3})\](.*)\n/', $replacement_regex, $verse_array['context']);
+  $page_content .= theme_box($title, $content);
+  $morelink = _bible_morelink($verse_array['bid'], $verse_array['book'], $verse_array['chapter'], $verse_array['verse']);
+  $page_content .= "<div class='bible-more-link'><a href='". $morelink. "'>". t("See All..."). "</a></div>";
+  // Return themed table
+  return $page_content;
+}

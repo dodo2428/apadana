@@ -1,0 +1,6 @@
+; $Id: apadana.info,v 0.1.0.0 2010/09/09 16:19:00 Martin&Nikoo Exp $
+name = apadana
+description = Bible commentary Tool
+package = Church
+core = 6.x
+

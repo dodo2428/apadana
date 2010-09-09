@@ -1,0 +1,45 @@
+# $Id: apadana-module.pot,v 1.1.2.2 2010/01/11 14:24:47 Martin&Nikoo Exp $
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <martin.hansell@gmail.com>
+# Generated from files:
+#  apadana.module,v 1.1.1.29 2010/01/11 12:40:48 Martin&Nikoo
+#  apadana.info,v 1.1.1.6 2009/11/07 16:19:00 Martin&Nikoo
+#  apadana.install,v 1.1.1.9 2009/11/15 15:08:04 Martin&Nikoo
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-01-11 14:16+0000\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <martin.hansell@gmail.com>\n"
+"Language-Team: LANGUAGE <martin.hansell@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: apadana.module:105
+msgid "Commentary"
+msgstr ""
+
+#: bible.module:106
+msgid "Music"
+msgstr ""
+
+#: bible.module:107
+msgid "Reference Verse"
+msgstr ""
+
+#: bible.module:134;185
+msgid "Daily Golden Verse"
+msgstr ""
+
+#: bible.module:135;227;1746;362;369
+msgid "Bible Search"
+msgstr ""
+
+#: bible.module:136;231
+msgid "Daily Proverb"
+msgstr ""

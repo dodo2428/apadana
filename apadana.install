@@ -1,0 +1,24 @@
+<?php
+// $Id: apadana.install
+
+/**
+* Implementation of hook_install()
+*/
+function apadana_install() {
+  // Set the module weight so it can override other modules.
+  db_query("UPDATE {system} SET weight = 99 WHERE name = 'apadana'");
+
+  //Start the installation
+  drupal_install_schema('apadana');
+
+  // Notify of changes
+  drupal_set_message(t('Apadana module installed successfully.'));
+}
+
+/**
+* Implementation of hook_uninstall()
+*/
+function apadana_uninstall() {
+  // Remove the module from the system table
+  db_query("DELETE FROM {system} WHERE name = 'apadana'");
+}
