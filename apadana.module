@@ -1,2 +1,32 @@
 <?php
 // $Id$
+
+//Create the block for apadana
+
+function apadana_block($op = "list", $delta = 0) {
+
+    $block = array();
+    if ($op == "list") {
+    
+        // Generate listing of blocks from this module, for the admin/block page
+        $block[0]["info"] = t("APADANA");
+        
+    } elseif ($op == "view") {
+    
+        // Generate content for blocks from this module
+                
+        //Get today's date
+        $today = getdate();
+        
+        
+        //Setup the block        
+        $block["subject"] = t("APADANA");
+        
+                        
+        $block["content"] = t("Today is $today[weekday]");
+        
+    }
+    
+    return $block;            
+        
+}
